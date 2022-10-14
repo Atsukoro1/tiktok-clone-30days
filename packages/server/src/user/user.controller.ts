@@ -6,12 +6,12 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @Post('register')
-    register() {
-        return this.userService.register();
+    async register() {
+        return await this.userService.register();
     }
 
     @Post('login')
-    login() {
-        return this.userService.login();
+    async login() {
+        return await this.userService.login();
     }
 }

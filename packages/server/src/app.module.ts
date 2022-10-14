@@ -1,5 +1,6 @@
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
+import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 
@@ -9,9 +10,10 @@ import { Module } from '@nestjs/common';
       ignoreEnvFile: false,
       envFilePath: ".env"
     }),
+    UserModule
   ],
   controllers: [
-    UserController
+    UserController,
   ],
   providers: [
     UserService
