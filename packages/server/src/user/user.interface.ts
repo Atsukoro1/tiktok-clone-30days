@@ -1,5 +1,5 @@
 export interface User extends Document {
-    readonly username: String,
+    readonly username: String
     readonly password: String,
     readonly email: String,
     readonly lastUserAgent: String,
