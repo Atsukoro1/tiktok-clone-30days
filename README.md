@@ -6,16 +6,19 @@ The concept of TikTok is relatively simple, but there are some things you can do
 ### Milestones
 Here are some milestones I decided to put here, so you can watch my progress if you want (there is nobody like that).
 
-- [] (Frontend & Backend) Basic app file structure
-- [] (Backend) Login and register system
-- [] (Frontend) Login and register system
-- [] (Backend) Creating and uploading videos.
-- [] (Frontend) Creating and uploading videos.
-- [] (Frontend) Customizing of the UI (dark/light theme, custom color)
-- [] (Backend) AI content personalisation 
-- [] (Backend) Make cdn instead of having the static files in the API rest server
-- [] (Frontend) Viewing live videos
-- [] (Backend) Viewing live videos
-- [] (Frontend) Messaging other users
+- [x] (Backend) Basic app file structure
+- [ ] (Frontend) Basic app file structure
+- [ ] (Backend) Login and register system
+- [ ] (Frontend) Login and register system
+- [ ] (Backend) Creating and uploading videos.
+- [ ] (Frontend) Creating and uploading videos.
+- [ ] (Frontend) Customizing of the UI (dark/light theme, custom color)
+- [ ] (Backend) AI content personalisation 
+- [ ] (Backend) Make cdn instead of having the static files in the API rest server
+- [ ] (Frontend) Viewing live videos
+- [ ] (Backend) Viewing live videos
+- [ ] (Frontend) Messaging other users
+- [ ] (Backend) Have tests on every route
+- [ ] (Backend) Make some 2FA or email verification if user logs in with different ip and user agent
 
 I'll add more soon!
