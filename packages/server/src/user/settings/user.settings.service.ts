@@ -30,11 +30,6 @@ export class UserSettingsService {
             }, HttpStatus.BAD_REQUEST)
         };
 
-        const isPasswordCorrect = await user.comparePassword(password);
-        if(!isPasswordCorrect) {
-            throw new Error('Password is incorrect');
-        }
-
         return "aha";
     }
 }
