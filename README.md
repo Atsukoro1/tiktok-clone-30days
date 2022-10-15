@@ -8,7 +8,7 @@ Here are some milestones I decided to put here, so you can watch my progress if 
 
 - [x] (Backend) Basic app file structure
 - [ ] (Frontend) Basic app file structure
-- [ ] (Backend) Login and register system
+- [x] (Backend) Login and register system
 - [ ] (Frontend) Login and register system
 - [ ] (Backend) Creating and uploading videos.
 - [ ] (Frontend) Creating and uploading videos.
@@ -19,6 +19,7 @@ Here are some milestones I decided to put here, so you can watch my progress if 
 - [ ] (Backend) Viewing live videos
 - [ ] (Frontend) Messaging other users
 - [ ] (Backend) Have tests on every route
-- [ ] (Backend) Make some 2FA or email verification if user logs in with different ip and user agent
+- [x] (Backend) Make optional 2FA with mobile
+- [ ] (Backend) Have some preventive actions if user logs with another ip address or user agent
 
 I'll add more soon!

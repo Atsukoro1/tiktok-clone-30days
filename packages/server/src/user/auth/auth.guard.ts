@@ -11,6 +11,11 @@ import {
 import { Model } from 'mongoose';
 import { User } from '../user.interface';
 
+interface ValidationContent {
+    _id: String;
+    twoFactor: boolean;
+};
+
 const getCookie = (name: string, req: Request): String | null => {
     const cookieHeader = req.headers.cookie;
     if(!cookieHeader) return null;
@@ -24,7 +29,7 @@ const getCookie = (name: string, req: Request): String | null => {
     return null;
 }
 
-function validate(context: ExecutionContext): String | null {
+function validate(context: ExecutionContext): ValidationContent | null {
     let req: Request = context.switchToHttp().getRequest();
 
     const token: String | null = getCookie('token', req);
@@ -35,12 +40,15 @@ function validate(context: ExecutionContext): String | null {
     };
 
     let decode = null;
-    jwt.verify(token.toString(), process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token.toString(), process.env.JWT_SECRET, (err, decoded: any) => {
         if(err) {
             return null;
         }
 
-        decode = (<any>decoded)._id;
+        decode = {
+            _id: decoded._id,
+            twoFactor: decoded.twoFactor
+        }
     });
 
     return decode;
@@ -56,18 +64,26 @@ export class AuthGuard implements CanActivate {
     async canActivate(
         ctx: ExecutionContext
     ): Promise<boolean> {
-        const id_token = validate(ctx);
+        const validation = validate(ctx);
 
-        if(!id_token) {
+        // TODO: Fix this spaghetti code later when I'll have time
+        if(!validation) {
             throw new HttpException({
                 statusCode: HttpStatus.UNAUTHORIZED,
                 error: 'You are not authorized to access this resource'
             }, HttpStatus.UNAUTHORIZED);
         };
 
-        const found = await this.userSchema.findOne({ _id: id_token });
+        const found: User = await this.userSchema.findOne({ _id: validation._id });
 
         if(!found) {
+            throw new HttpException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                error: 'You are not authorized to access this resource'
+            }, HttpStatus.UNAUTHORIZED);
+        };
+
+        if(found.twoFactorAuth && !validation.twoFactor) {
             throw new HttpException({
                 statusCode: HttpStatus.UNAUTHORIZED,
                 error: 'You are not authorized to access this resource'

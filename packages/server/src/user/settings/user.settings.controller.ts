@@ -33,6 +33,7 @@ export class UserSettingsController {
     }
 
     @Post('change-password')
+    @UseGuards(AuthGuard)
     async changePassword(
         @Response() res,
         @Query('code') code: string,
