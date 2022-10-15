@@ -3,9 +3,11 @@ import { ChangePasswordInput, SendEmailVerifyCodeInput } from "./user.settings.d
 import { randomString } from "../user.helpers";
 import { User } from "../user.interface";
 import * as nodemailer from 'nodemailer';
+import * as speakEasy from 'speakeasy';
 import { Response } from "express";
 import * as argon2 from 'argon2';
-import { Model } from "mongoose";
+import { Document, Model } from "mongoose";
+import * as QRCode from 'qrcode';
 
 @Injectable()
 export class UserSettingsService {
@@ -13,6 +15,39 @@ export class UserSettingsService {
         @Inject('USER_MODEL')
         private userSchema: Model<User>,
     ) {}
+
+    async enable2fa(
+        user: User & Document,
+        res: Response
+    ) {
+        if(user.twoFactorAuth.enabled) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "2FA is already enabled!"
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        const secret = speakEasy.generateSecret({
+            name: '2FA',
+            length: 20,
+        });
+
+        const qrcode = await QRCode.toDataURL(secret.otpauth_url);
+
+        await user.updateOne({
+            twoFactorAuth: {
+                enabled: true,
+                secret: secret.base32
+            }
+        });
+
+        return res.status(200)
+            .json({
+                statusCode: 200,
+                message: "2FA secret generated!",
+                qrcode: qrcode
+            });
+    }
 
     async changePassword(
         code: string,

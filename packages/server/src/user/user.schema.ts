@@ -32,5 +32,24 @@ export const UserSchema = new mongoose.Schema({
     emailVerificationCode: {
         type: String,
         default: randomString()
+    },
+
+    twoFactorAuth: {
+        default: {
+            enabled: false,
+            secret: null
+        },
+        type: Object,
+
+        enabled: {
+            type: Boolean,
+            default: false
+        },
+
+        secret: {
+            type: String,
+            default: null,
+            required: false
+        }
     }
 });

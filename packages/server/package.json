@@ -31,9 +31,11 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.5",
     "nodemailer": "^6.8.0",
+    "qrcode": "^1.5.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -45,6 +47,8 @@
     "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^16.0.0",
     "@types/nodemailer": "^6.4.6",
+    "@types/qrcode": "^1.5.0",
+    "@types/speakeasy": "^2.0.7",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",

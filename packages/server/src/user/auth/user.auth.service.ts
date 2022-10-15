@@ -49,8 +49,6 @@ export class UserAuthService {
             process.env.JWT_SECRET
         );
 
-        console.log(token);
-
         return res.status(HttpStatus.CREATED)
             .setHeader(
                 'set-cookie',

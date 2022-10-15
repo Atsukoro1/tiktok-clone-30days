@@ -1,12 +1,25 @@
+import { Body, Controller, Post, Query, Request, Response, UseGuards } from "@nestjs/common";
 import { ChangePasswordInput, SendEmailVerifyCodeInput } from "./user.settings.dto";
-import { Body, Controller, Post, Query, Response } from "@nestjs/common";
 import { UserSettingsService } from "./user.settings.service";
+import { AuthGuard } from "../auth/auth.guard";
 
 @Controller('user/settings')
 export class UserSettingsController {
     constructor(
         private service: UserSettingsService
     ) {}
+
+    @Post('enable-2fa')
+    @UseGuards(AuthGuard)
+    async enable2fa(
+        @Request() req,
+        @Response() res
+    ) {
+        return this.service.enable2fa(
+            req.user,
+            res
+        );
+    }
 
     @Post('email-code') 
     async emailCode(
