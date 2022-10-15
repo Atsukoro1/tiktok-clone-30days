@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { UserLoginInput, UserRegisterInput } from "./user.auth.dto";
+import { User2FAInput, UserLoginInput, UserRegisterInput } from "./user.auth.dto";
 import { User } from "../user.interface";
+import * as speakeasy from 'speakeasy';
 import * as jwt from 'jsonwebtoken';
 import { Response } from "express";
 import { Model } from "mongoose";
@@ -49,8 +50,6 @@ export class UserAuthService {
             process.env.JWT_SECRET
         );
 
-        console.log(token);
-
         return res.status(HttpStatus.CREATED)
             .setHeader(
                 'set-cookie',
@@ -91,18 +90,30 @@ export class UserAuthService {
             error: 'Invalid password'
         }, HttpStatus.BAD_REQUEST);
 
-        // Update the user agent and ip address to current values
-        foundUser.lastIpAddr = ip;
-        foundUser.lastUserAgent = userAgent;
-
-        await foundUser.save();
-
         const token = jwt.sign(
             JSON.stringify({
                 _id: foundUser._id,
             }),
             process.env.JWT_SECRET
         );
+
+        if(foundUser.twoFactorAuth.enabled) {
+            return res.status(HttpStatus.OK)
+                .setHeader(
+                    'set-cookie',
+                    `token=${token}; HttpOnly; Path=/`
+                )
+                .json({
+                    statusCode: HttpStatus.OK,
+                    message: '2FA is enabled, please verify your identity'
+                });
+        }
+
+        // Update the user agent and ip address to current values
+        foundUser.lastIpAddr = ip;
+        foundUser.lastUserAgent = userAgent;
+
+        await foundUser.save();
 
         return res.status(HttpStatus.OK)
             .setHeader(
@@ -112,6 +123,47 @@ export class UserAuthService {
             .json({
                 statusCode: HttpStatus.OK,
                 message: 'Validation successful'
+            });
+    }
+
+    async twoFactorAuth(
+        input: User2FAInput, 
+        res: Response, 
+        user: User
+    ): Promise<Response | HttpException> {
+        if(!user.twoFactorAuth.enabled) throw new HttpException({
+            statusCode: HttpStatus.BAD_REQUEST,
+            error: '2FA is not enabled'
+        }, HttpStatus.BAD_REQUEST);
+
+        let validToken = speakeasy.totp.verify({
+            secret: user.twoFactorAuth.secret,
+            encoding: 'base32',
+            token: input.code,
+            window: 1
+        });
+
+        if(!validToken) throw new HttpException({
+            statusCode: HttpStatus.BAD_REQUEST,
+            error: 'Invalid code'
+        }, HttpStatus.BAD_REQUEST); 
+
+        const token = jwt.sign(
+            JSON.stringify({
+                _id: user._id,
+                twoFactor: true
+            }),
+            process.env.JWT_SECRET
+        );
+
+        return res.status(HttpStatus.OK)
+            .setHeader(
+                'set-cookie',
+                `token=${token}; HttpOnly; Path=/`
+            )
+            .json({
+                statusCode: HttpStatus.OK,
+                message: 'Succefully authenticated using third party app!'
             });
     }
 }

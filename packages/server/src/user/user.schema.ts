@@ -1,14 +1,5 @@
+import { randomString } from './user.helpers';
 import * as mongoose from 'mongoose';
-
-const randomString = (): String => {
-    return [...Array(10)].map(
-        _ => (
-            ~~(
-                Math.random() * 36
-            )
-        ).toString(36)
-    ).join("")
-}
 
 export const UserSchema = new mongoose.Schema({
     username: {
@@ -41,5 +32,24 @@ export const UserSchema = new mongoose.Schema({
     emailVerificationCode: {
         type: String,
         default: randomString()
+    },
+
+    twoFactorAuth: {
+        default: {
+            enabled: false,
+            secret: null
+        },
+        type: Object,
+
+        enabled: {
+            type: Boolean,
+            default: false
+        },
+
+        secret: {
+            type: String,
+            default: null,
+            required: false
+        }
     }
 });

@@ -1,6 +1,6 @@
-import { Body, Controller, Headers, Ip, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Query, Request, Response, UseGuards } from "@nestjs/common";
+import { ChangePasswordInput, SendEmailVerifyCodeInput } from "./user.settings.dto";
 import { UserSettingsService } from "./user.settings.service";
-import { UserChangePasswordInput } from "./user.settings.dto";
 import { AuthGuard } from "../auth/auth.guard";
 
 @Controller('user/settings')
@@ -9,19 +9,42 @@ export class UserSettingsController {
         private service: UserSettingsService
     ) {}
 
-    @Post('change-password') 
+    @Post('enable-2fa')
     @UseGuards(AuthGuard)
-    async nevim(
+    async enable2fa(
         @Request() req,
-        @Body() input: UserChangePasswordInput,
-        @Headers('user-agent') userAgent: string,
-        @Ip() ip: string
+        @Response() res
+    ) {
+        return this.service.enable2fa(
+            req.user,
+            res
+        );
+    }
+
+    @Post('email-code') 
+    async emailCode(
+        @Response() res,
+        @Body() input: SendEmailVerifyCodeInput
+    ) {
+        return this.service.sendEmailVerifyCode(
+            input, 
+            res
+        );
+    }
+
+    @Post('change-password')
+    @UseGuards(AuthGuard)
+    async changePassword(
+        @Response() res,
+        @Query('code') code: string,
+        @Query('_id') _id: string,
+        @Body() input: ChangePasswordInput
     ) {
         return this.service.changePassword(
-            input, 
-            userAgent, 
-            ip,
-            req.user
+            code, 
+            _id,
+            input,
+            res
         );
     }
 }

@@ -1,7 +1,8 @@
-import { Body, Controller, Ip, Post, Headers, Res, HttpException } from "@nestjs/common";
-import { UserLoginInput, UserRegisterInput } from "./user.auth.dto";
+import { Body, Controller, Ip, Post, Headers, Res, HttpException, UseGuards, Request } from "@nestjs/common";
+import { User2FAInput, UserLoginInput, UserRegisterInput } from "./user.auth.dto";
 import { UserAuthService } from "./user.auth.service";
 import { Response } from "express";
+import { AuthGuard } from "./auth.guard";
 
 @Controller('user/auth')
 export class UserAuthController {
@@ -25,5 +26,19 @@ export class UserAuthController {
         @Res() res: Response
     ): Promise<Response | HttpException> {
         return await this.service.login(input, ip, userAgent, res);
+    }
+
+    @Post('2fa')
+    @UseGuards(AuthGuard)
+    async twoFactorAuth(
+        @Body() input: User2FAInput,
+        @Request() req,
+        @Res() res
+    ): Promise<Response | HttpException> {
+        return this.service.twoFactorAuth(
+            input, 
+            res,
+            req.user
+        );
     }
 }

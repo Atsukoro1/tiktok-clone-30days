@@ -1,13 +1,15 @@
-import { IsDefined, MaxLength, MinLength } from "class-validator";
+import { IsDefined, IsEmail, MaxLength, MinLength } from "class-validator";
 
-export class UserChangePasswordInput {
+export class SendEmailVerifyCodeInput {
+    @IsDefined()
+    @IsEmail()
+    @MaxLength(1024)
+    email!: string;
+}
+
+export class ChangePasswordInput {
     @IsDefined()
     @MinLength(8)
     @MaxLength(1024)
-    readonly password!: string;
-
-    @IsDefined()
-    @MinLength(8)
-    @MaxLength(1024)
-    readonly newPassword!: string;
+    password!: string;
 }

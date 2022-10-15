@@ -2,9 +2,16 @@ import {
     IsAlphanumeric, 
     IsDefined, 
     IsEmail, 
+    IsNumber, 
     MaxLength, 
     MinLength 
 } from "class-validator";
+
+export class User2FAInput {
+    @IsDefined()
+    @IsNumber()
+    code!: string;
+}
 
 export class UserRegisterInput {
     @IsDefined()
