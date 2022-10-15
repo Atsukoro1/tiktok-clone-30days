@@ -1,7 +1,8 @@
 import { UserChangePasswordInput } from "./user.settings.dto";
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
+import { Document, Model } from "mongoose";
 import { User } from "../user.interface";
-import { Model } from "mongoose";
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UserSettingsService {
@@ -13,8 +14,27 @@ export class UserSettingsService {
     async changePassword(
         input: UserChangePasswordInput, 
         userAgent: string,
-        ip: string
+        ip: string,
+        user: User & Document
     )  {
+        const { password, newPassword } = input;
+
+        const compare = await argon2.verify(
+            user.password.toString(), 
+            password
+        );
+        if(!compare) {
+            throw new HttpException({
+                statusCodde: HttpStatus.BAD_REQUEST,
+                error: 'Wrong password'
+            }, HttpStatus.BAD_REQUEST)
+        };
+
+        const isPasswordCorrect = await user.comparePassword(password);
+        if(!isPasswordCorrect) {
+            throw new Error('Password is incorrect');
+        }
+
         return "aha";
     }
 }

@@ -17,7 +17,11 @@ export class UserSettingsController {
         @Headers('user-agent') userAgent: string,
         @Ip() ip: string
     ) {
-        console.log(req.user);
-        return this.service.changePassword(input, userAgent, ip);
+        return this.service.changePassword(
+            input, 
+            userAgent, 
+            ip,
+            req.user
+        );
     }
 }
