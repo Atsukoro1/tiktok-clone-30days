@@ -26,9 +26,9 @@ export class UserRegisterInput {
 
 export class UserLoginInput {
     @IsDefined()
-    @MinLength(3)
-    @MaxLength(30)
-    readonly username!: string;
+    @IsEmail()
+    @MaxLength(1024)
+    readonly email!: string;
 
     @IsDefined()
     @MinLength(8)

@@ -1,11 +1,11 @@
 import { Body, Controller, Ip, Post, Headers, Res, HttpException } from "@nestjs/common";
 import { UserLoginInput, UserRegisterInput } from "./dto";
-import { UserService } from "./service";
+import { UserAuthService } from "./service";
 import { Response } from "express";
 
 @Controller('user')
-export class UserController {
-    constructor(private userService: UserService) {}
+export class UserAuthController {
+    constructor(private service: UserAuthService) {}
 
     @Post('register')
     async register(
@@ -14,7 +14,7 @@ export class UserController {
         @Headers('user-agent') userAgent: string,
         @Res() res: Response
     ): Promise<Response | HttpException> {
-        return await this.userService.register(input, ip, userAgent, res);
+        return await this.service.register(input, ip, userAgent, res);
     }
 
     @Post('login')
@@ -24,6 +24,6 @@ export class UserController {
         @Headers('user-agent') userAgent: string,
         @Res() res: Response
     ): Promise<Response | HttpException> {
-        return await this.userService.login(input, ip, userAgent, res);
+        return await this.service.login(input, ip, userAgent, res);
     }
 }

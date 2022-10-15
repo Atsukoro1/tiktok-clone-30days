@@ -1,5 +1,5 @@
-import { UserController } from './user/controller';
-import { UserService } from './user/service';
+import { UserAuthController } from './user/auth/controller';
+import { UserAuthService } from './user/auth/service';
 import { UserModule } from './user/module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
@@ -13,10 +13,10 @@ import { Module } from '@nestjs/common';
     UserModule
   ],
   controllers: [
-    UserController,
+    UserAuthController,
   ],
   providers: [
-    UserService
+    UserAuthService
   ],
 })
 export class AppModule {}
