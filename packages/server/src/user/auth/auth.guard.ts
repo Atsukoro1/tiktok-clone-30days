@@ -5,8 +5,11 @@ import {
     ExecutionContext, 
     HttpException, 
     HttpStatus, 
+    Inject, 
     Injectable 
 } from "@nestjs/common";
+import { Model } from 'mongoose';
+import { User } from '../user.interface';
 
 const getCookie = (name: string, req: Request): String | null => {
     const cookieHeader = req.headers.cookie;
@@ -21,42 +24,58 @@ const getCookie = (name: string, req: Request): String | null => {
     return null;
 }
 
-async function validate(context: ExecutionContext): Promise<boolean> {
+function validate(context: ExecutionContext): String | null {
     let req: Request = context.switchToHttp().getRequest();
 
     const token: String | null = getCookie('token', req);
 
     // Request header do not contain token cookie
     if(!token) {
-        return false;
+        return null;
     };
 
+    let decode = null;
     jwt.verify(token.toString(), process.env.JWT_SECRET, (err, decoded) => {
         if(err) {
-            return false;
+            return null;
         }
 
-        (<any>req).user = decoded; 
+        decode = (<any>decoded)._id;
     });
 
-
-    return true;
+    return decode;
 }
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    canActivate(
+    constructor(
+        @Inject('USER_MODEL')
+        private userSchema: Model<User>,
+    ) {}
+    
+    async canActivate(
         ctx: ExecutionContext
-    ): boolean | Promise<boolean> {
-        return validate(ctx).then((valid) => {
-            if(!valid) {
-                throw new HttpException({
-                    statusCode: HttpStatus.UNAUTHORIZED,
-                    error: 'You are not authorized to access this resource'
-                }, HttpStatus.UNAUTHORIZED);
-            };
+    ): Promise<boolean> {
+        const id_token = validate(ctx);
 
-            return true;
-        });
+        if(!id_token) {
+            throw new HttpException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                error: 'You are not authorized to access this resource'
+            }, HttpStatus.UNAUTHORIZED);
+        };
+
+        const found = await this.userSchema.findOne({ _id: id_token });
+
+        if(!found) {
+            throw new HttpException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                error: 'You are not authorized to access this resource'
+            }, HttpStatus.UNAUTHORIZED);
+        };
+
+        ctx.switchToHttp().getRequest().user = found;
+
+        return true;
     }
 }
