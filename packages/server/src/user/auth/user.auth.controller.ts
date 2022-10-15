@@ -1,8 +1,22 @@
-import { Body, Controller, Ip, Post, Headers, Res, HttpException, UseGuards, Request } from "@nestjs/common";
-import { User2FAInput, UserLoginInput, UserRegisterInput } from "./user.auth.dto";
 import { UserAuthService } from "./user.auth.service";
 import { Response } from "express";
 import { AuthGuard } from "./auth.guard";
+import { 
+    User2FAInput, 
+    UserLoginInput, 
+    UserRegisterInput 
+} from "./user.auth.dto";
+import { 
+    Body, 
+    Controller, 
+    Ip, 
+    Post, 
+    Headers, 
+    Res, 
+    HttpException, 
+    UseGuards, 
+    Request 
+} from "@nestjs/common";
 
 @Controller('user/auth')
 export class UserAuthController {

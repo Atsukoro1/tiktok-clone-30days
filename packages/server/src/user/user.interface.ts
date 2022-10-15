@@ -3,7 +3,11 @@ export interface User extends Document {
     [x: string]: any;
     username: String
     password: String,
-    email: String,
+    email: {
+        primary: String,
+        verified: Boolean,  
+        verificationCode: String
+    },
     lastUserAgent: String,
     lastIpAddr: String,
     emailVerificationCode: String,

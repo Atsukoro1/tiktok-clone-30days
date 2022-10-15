@@ -1,11 +1,20 @@
-import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { User2FAInput, UserLoginInput, UserRegisterInput } from "./user.auth.dto";
 import { User } from "../user.interface";
 import * as speakeasy from 'speakeasy';
 import * as jwt from 'jsonwebtoken';
 import { Response } from "express";
 import { Model } from "mongoose";
 import * as argon2 from 'argon2';
+import { 
+    User2FAInput, 
+    UserLoginInput, 
+    UserRegisterInput 
+} from "./user.auth.dto";
+import { 
+    HttpException, 
+    HttpStatus, 
+    Inject, 
+    Injectable 
+} from "@nestjs/common";
 
 @Injectable()
 export class UserAuthService {
@@ -21,7 +30,11 @@ export class UserAuthService {
         res: Response
     ): Promise<Response | HttpException> {
         // Check if a user with the same email already exists
-        if(await this.userSchema.findOne({ email: input.email })) {
+        if(await this.userSchema.findOne({ 
+            email: { 
+                primary: input.email 
+            }
+        })) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 error: 'Email already exists'
@@ -35,7 +48,9 @@ export class UserAuthService {
         const newUser = new this.userSchema({
             username: input.username,
             password: hashedPass,
-            email: input.email,
+            email: {
+                primary: input.email
+            },
             lastUserAgent: userAgent,
             lastIpAddr: ip
         });
@@ -68,7 +83,9 @@ export class UserAuthService {
         res: Response
     ): Promise<Response | HttpException> {
         const foundUser = await this.userSchema.findOne({ 
-            email: input.email 
+            email: {
+                primary: input.email
+            }
         });
 
         if(!foundUser) throw new HttpException({

@@ -15,8 +15,24 @@ export const UserSchema = new mongoose.Schema({
     },
 
     email: {
-        type: String,
-        required: true,
+        primary: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+        },
+
+        verified: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+
+        verificationCode: {
+            required: true,
+            type: String,
+            default: randomString()
+        }
     },
 
     lastUserAgent: {
@@ -27,11 +43,6 @@ export const UserSchema = new mongoose.Schema({
     lastIpAddr: {
         type: String,
         required: true
-    },
-
-    emailVerificationCode: {
-        type: String,
-        default: randomString()
     },
 
     twoFactorAuth: {

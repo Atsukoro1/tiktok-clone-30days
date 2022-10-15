@@ -1,7 +1,18 @@
-import { Body, Controller, Post, Query, Request, Response, UseGuards } from "@nestjs/common";
-import { ChangePasswordInput, SendEmailVerifyCodeInput } from "./user.settings.dto";
 import { UserSettingsService } from "./user.settings.service";
 import { AuthGuard } from "../auth/auth.guard";
+import { 
+    Body, 
+    Controller, 
+    Post, 
+    Query, 
+    Request, 
+    Response, 
+    UseGuards 
+} from "@nestjs/common";
+import { 
+    ChangePasswordInput, 
+    SendEmailVerifyCodeInput 
+} from "./user.settings.dto";
 
 @Controller('user/settings')
 export class UserSettingsController {

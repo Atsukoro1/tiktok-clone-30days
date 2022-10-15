@@ -3,7 +3,7 @@ import { UserSettingsService } from "./settings/user.settings.service";
 import { UserAuthController } from "./auth/user.auth.controller";
 import { UserAuthService } from "./auth/user.auth.service";
 import { DatabaseModule } from "src/database.module";
-import { userProviders } from "./user.provicers.ts";
+import { userProviders } from "./user.providers";
 import { Module } from "@nestjs/common";
 
 @Module({

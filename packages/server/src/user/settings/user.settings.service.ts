@@ -1,13 +1,21 @@
-import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { ChangePasswordInput, SendEmailVerifyCodeInput } from "./user.settings.dto";
 import { randomString } from "../user.helpers";
+import { Document, Model } from "mongoose";
 import { User } from "../user.interface";
 import * as nodemailer from 'nodemailer';
 import * as speakEasy from 'speakeasy';
 import { Response } from "express";
 import * as argon2 from 'argon2';
-import { Document, Model } from "mongoose";
 import * as QRCode from 'qrcode';
+import { 
+    HttpException, 
+    HttpStatus, 
+    Inject, 
+    Injectable 
+} from "@nestjs/common";
+import { 
+    ChangePasswordInput, 
+    SendEmailVerifyCodeInput 
+} from "./user.settings.dto";
 
 @Injectable()
 export class UserSettingsService {
