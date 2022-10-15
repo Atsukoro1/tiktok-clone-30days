@@ -1,6 +1,6 @@
-import { UserAuthController } from './user/auth/controller';
-import { UserAuthService } from './user/auth/service';
-import { UserModule } from './user/module';
+import { UserAuthController } from './user/auth/user.auth.controller';
+import { UserAuthService } from './user/auth/user.auth.service';
+import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 

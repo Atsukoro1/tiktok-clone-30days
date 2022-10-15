@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from "@nestjs/common";
-import { UserLoginInput, UserRegisterInput } from "./dto";
+import { UserLoginInput, UserRegisterInput } from "./user.auth.dto";
 import { User } from "../user.interface";
+import * as jwt from 'jsonwebtoken';
 import { Response } from "express";
 import { Model } from "mongoose";
 import * as argon2 from 'argon2';
@@ -41,10 +42,24 @@ export class UserAuthService {
         const saved = await newUser.save();
         if(saved.errors) throw new Error('Failed to register user');
 
-        return res.status(HttpStatus.CREATED).json({
-            statusCode: HttpStatus.CREATED,
-            message: 'User registered successfully'
-        });
+        const token = jwt.sign(
+            JSON.stringify({
+                _id: saved._id,
+            }),
+            process.env.JWT_SECRET
+        );
+
+        console.log(token);
+
+        return res.status(HttpStatus.CREATED)
+            .setHeader(
+                'set-cookie',
+                `token=${token}; HttpOnly; Path=/`
+            )
+            .json({
+                statusCode: HttpStatus.CREATED,
+                message: 'User registered successfully'
+            })
     }
 
     async login(
@@ -82,9 +97,21 @@ export class UserAuthService {
 
         await foundUser.save();
 
-        return res.status(HttpStatus.OK).json({
-            statusCode: HttpStatus.OK,
-            message: 'Validation successful'
-        });
+        const token = jwt.sign(
+            JSON.stringify({
+                _id: foundUser._id,
+            }),
+            process.env.JWT_SECRET
+        );
+
+        return res.status(HttpStatus.OK)
+            .setHeader(
+                'set-cookie', 
+                `token=${token}; HttpOnly; Path=/`
+            )
+            .json({
+                statusCode: HttpStatus.OK,
+                message: 'Validation successful'
+            });
     }
 }
