@@ -1,14 +1,5 @@
+import { randomString } from './user.helpers';
 import * as mongoose from 'mongoose';
-
-const randomString = (): String => {
-    return [...Array(10)].map(
-        _ => (
-            ~~(
-                Math.random() * 36
-            )
-        ).toString(36)
-    ).join("")
-}
 
 export const UserSchema = new mongoose.Schema({
     username: {
