@@ -1,7 +1,7 @@
 # 🎵 Tiktok clone made in 30 days
 
 ### Why 📜
-The concept of TikTok is relatively simple, but there are some things you can do to improve the final product. For example, you can add personalisation features using a neural network, or enable users to record and edit videos within the app instead of just uploading the final product. These small changes can make a big difference in the overall quality of the app. That's why I choosed this type of app.
+The concept of TikTok is relatively simple, but there are some things you can do to improve the final product. For example, you can add personalisation features using a neural network, or enable users to record and edit videos within the app instead of just uploading the final product. These small changes can make a big difference in the overall quality of the app. That's why I choosed this type of app, also I am including a lot of technology that I don't know so I'll learn it while doing this app.
 
 ### Milestones
 Here are some milestones I decided to put here, so you can watch my progress if you want (there is nobody like that).
@@ -9,6 +9,7 @@ Here are some milestones I decided to put here, so you can watch my progress if 
 - [x] (Backend) Basic app file structure
 - [ ] (Frontend) Basic app file structure
 - [x] (Backend) Login and register system
+- [ ] (Backend) Remake & make everything with Neo4J instead of MongoDB
 - [ ] (Frontend) Login and register system
 - [ ] (Backend) Creating and uploading videos.
 - [ ] (Frontend) Creating and uploading videos.
