@@ -1,0 +1,14 @@
+version: '3'
+services:
+  neo4j: 
+    image: neo4j:latest
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./data:/data
+      - ./import:/var/lib/neo4j/import
+      - ./logs:/logs
+    environment:
+      - NEO4J_AUTH=neo4j/${DB_PASS}
+      - NEO4J_dbms_memory_heap_max__size=4G

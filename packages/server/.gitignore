@@ -39,3 +39,7 @@ lerna-debug.log*
 
 # Environment variables
 .env
+
+# Database files
+/import 
+/data
