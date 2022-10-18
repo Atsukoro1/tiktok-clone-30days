@@ -16,7 +16,7 @@ import {
     ChangePasswordInput, 
     SendEmailVerifyCodeInput 
 } from "./user.settings.dto";
-import { enable2FAquery } from "src/queries/user.queries";
+import { changePasswordQuery, enable2FAquery, getUserByIdQuery } from "src/queries/user.queries";
 import { driver } from "src/main";
 
 @Injectable()
@@ -65,12 +65,20 @@ export class UserSettingsService {
         input: ChangePasswordInput,
         res: Response
     ) {
-        const found = await this.userSchema.findOne({
-            emailVerificationCode: code,
-            _id: _id
+        const session = driver.session();
+
+        if(!code || !_id) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "Code and _id are required!"
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        const found = await session.run(getUserByIdQuery, {
+            id: _id
         });
 
-        if(!found) {
+        if(found.records.length == 0) {
             throw new HttpException({
                 message: 'Invalid code', 
                 statusCode: HttpStatus.UNAUTHORIZED
@@ -80,10 +88,13 @@ export class UserSettingsService {
         const hash = await argon2.hash(input.password, {
             saltLength: 32,
         });
-        await found.updateOne({
-            emailVerificationCode: randomString(),
-            password: hash
+        await session.run(changePasswordQuery, {
+            id: found.records[0].get(0).properties.id,
+            password: hash,
+            emailVerificationCode: randomString()
         });
+        
+        session.close();
 
         return res.status(200)
             .json({

@@ -52,3 +52,12 @@ export const enable2FAquery = `
     SET u.twoFactorSecret = $twoFactorSecret
     RETURN u
 `;
+
+export const changePasswordQuery = `
+    MATCH (u:USER {
+        id: $id
+    })
+    SET u.password = $password
+    SET u.emailVerificationCode = $emailVerificationCode
+    RETURN u
+`;
