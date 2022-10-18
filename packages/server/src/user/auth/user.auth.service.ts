@@ -4,7 +4,6 @@ import * as speakeasy from 'speakeasy';
 import * as jwt from 'jsonwebtoken';
 import { driver } from "../../main";
 import { Response } from "express";
-import { Model } from "mongoose";
 import * as argon2 from 'argon2';
 import { 
     User2FAInput, 
@@ -14,20 +13,13 @@ import {
 import { 
     HttpException, 
     HttpStatus, 
-    Inject, 
     Injectable 
 } from "@nestjs/common";
 import { randomString } from "../user.helpers";
 import { v4 as uuidv4 } from 'uuid';
-import { session } from "neo4j-driver";
 
 @Injectable()
 export class UserAuthService {
-    constructor(
-        @Inject('USER_MODEL')
-        private userSchema: Model<User>
-    ) {}
-
     async register(
         input: UserRegisterInput, 
         ip: String, 

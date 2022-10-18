@@ -8,7 +8,6 @@ import {
     Inject, 
     Injectable 
 } from "@nestjs/common";
-import { Model } from 'mongoose';
 import { User } from '../user.interface';
 import { driver } from 'src/main';
 import { getUserByIdQuery } from 'src/queries/user.queries';
@@ -67,11 +66,6 @@ function returnNotAuthorized(session: Session) {
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(
-        @Inject('USER_MODEL')
-        private userSchema: Model<User>,
-    ) {}
-    
     async canActivate(
         ctx: ExecutionContext
     ): Promise<boolean> {
