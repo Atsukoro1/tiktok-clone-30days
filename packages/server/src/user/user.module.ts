@@ -1,22 +1,21 @@
+import { UserRelationshipsController } from "./relationships/user.relationships.controller";
+import { UserRelationshipsService } from "./relationships/user.relationships.service";
 import { UserSettingsController } from "./settings/user.settings.controller";
 import { UserSettingsService } from "./settings/user.settings.service";
 import { UserAuthController } from "./auth/user.auth.controller";
 import { UserAuthService } from "./auth/user.auth.service";
-import { DatabaseModule } from "src/database.module";
-import { userProviders } from "./user.providers";
 import { Module } from "@nestjs/common";
 
 @Module({
-    imports: [DatabaseModule],
-    exports: [...userProviders],
     controllers: [
         UserAuthController,
-        UserSettingsController
+        UserSettingsController,
+        UserRelationshipsController
     ],
     providers: [
         UserAuthService,
         UserSettingsService,
-        ...userProviders
+        UserRelationshipsService
     ],
 })
 export class UserModule {}

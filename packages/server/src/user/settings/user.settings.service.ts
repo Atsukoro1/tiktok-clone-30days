@@ -1,5 +1,4 @@
 import { randomString } from "../user.helpers";
-import { Document, Model } from "mongoose";
 import { User } from "../user.interface";
 import * as nodemailer from 'nodemailer';
 import * as speakEasy from 'speakeasy';
@@ -9,26 +8,24 @@ import * as QRCode from 'qrcode';
 import { 
     HttpException, 
     HttpStatus, 
-    Inject, 
     Injectable 
 } from "@nestjs/common";
 import { 
     ChangePasswordInput, 
     SendEmailVerifyCodeInput 
 } from "./user.settings.dto";
+import { changePasswordQuery, enable2FAquery, getUserByEmailQuery, getUserByIdQuery } from "src/queries/user.queries";
+import { driver } from "src/main";
 
 @Injectable()
 export class UserSettingsService {
-    constructor(
-        @Inject('USER_MODEL')
-        private userSchema: Model<User>,
-    ) {}
-
     async enable2fa(
-        user: User & Document,
+        user: User,
         res: Response
     ) {
-        if(user.twoFactorAuth.enabled) {
+        const session = driver.session();
+
+        if(user.twoFactorEnabled) {
             throw new HttpException({
                 statusCode: 400,
                 message: "2FA is already enabled!"
@@ -42,11 +39,9 @@ export class UserSettingsService {
 
         const qrcode = await QRCode.toDataURL(secret.otpauth_url);
 
-        await user.updateOne({
-            twoFactorAuth: {
-                enabled: true,
-                secret: secret.base32
-            }
+        await session.run(enable2FAquery, {
+            id: user.id,
+            twoFactorSecret: secret.base32
         });
 
         return res.status(200)
@@ -63,12 +58,20 @@ export class UserSettingsService {
         input: ChangePasswordInput,
         res: Response
     ) {
-        const found = await this.userSchema.findOne({
-            emailVerificationCode: code,
-            _id: _id
+        const session = driver.session();
+
+        if(!code || !_id) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "Code and _id are required!"
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        const found = await session.run(getUserByIdQuery, {
+            id: _id
         });
 
-        if(!found) {
+        if(found.records.length == 0) {
             throw new HttpException({
                 message: 'Invalid code', 
                 statusCode: HttpStatus.UNAUTHORIZED
@@ -78,10 +81,13 @@ export class UserSettingsService {
         const hash = await argon2.hash(input.password, {
             saltLength: 32,
         });
-        await found.updateOne({
-            emailVerificationCode: randomString(),
-            password: hash
+        await session.run(changePasswordQuery, {
+            id: found.records[0].get(0).properties.id,
+            password: hash,
+            emailVerificationCode: randomString()
         });
+        
+        session.close();
 
         return res.status(200)
             .json({
@@ -94,16 +100,20 @@ export class UserSettingsService {
         input: SendEmailVerifyCodeInput,
         res: Response
     ): Promise<Response | HttpException> {
-        const found: User | null = await this.userSchema.findOne({
+        const session = driver.session();
+
+        const found = await session.run(getUserByEmailQuery, {
             email: input.email
         });
 
-        if(!found) {
+        if(found.records.length == 0) {
             throw new HttpException({
                 statusCode: 404,
                 message: "User with this email cannot be found!"
             }, HttpStatus.NOT_FOUND);
         };
+
+        const foundUser: User = found.records[0].get(0).properties;
 
         // Create nodemailer transport
         const transporter = nodemailer.createTransport({
@@ -126,12 +136,13 @@ export class UserSettingsService {
             html: `
                 <h1>Verify your email</h1>
                 <p>Click on the link below to verify your email</p>
-                <a href="${process.env.HOST}:${process.env.PORT}/user/settings/change-password?code=${found.emailVerificationCode}&_id=${found._id}">
+                <a href="${process.env.HOST}:${process.env.PORT}/user/settings/change-password?code=${foundUser.emailVerificationCode}&_id=${foundUser.id}">
                     Verify your email
                 </a>
             `
         });
         
+        session.close();
         if(info.accepted.includes(input.email)) {
             return res.status(200)
                 .json({

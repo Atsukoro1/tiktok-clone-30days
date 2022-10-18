@@ -1,14 +1,12 @@
 export interface User extends Document {
-    _id: any;
-    [x: string]: any;
+    id: String;
     username: String
     password: String,
-    email: {
-        primary: String,
-        verified: Boolean,  
-        verificationCode: String
-    },
+    email: String,
+    emailVerified: Boolean,
+    emailVerificationCode: String,
+    twoFactorEnabled: Boolean,
+    twoFactorSecret: String,
     lastUserAgent: String,
     lastIpAddr: String,
-    emailVerificationCode: String,
 }

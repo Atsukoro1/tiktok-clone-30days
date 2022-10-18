@@ -8,11 +8,13 @@ import {
     Inject, 
     Injectable 
 } from "@nestjs/common";
-import { Model } from 'mongoose';
 import { User } from '../user.interface';
+import { driver } from 'src/main';
+import { getUserByIdQuery } from 'src/queries/user.queries';
+import { Session } from 'neo4j-driver';
 
 interface ValidationContent {
-    _id: String;
+    id: String;
     twoFactor: boolean;
 };
 
@@ -46,7 +48,7 @@ function validate(context: ExecutionContext): ValidationContent | null {
         }
 
         decode = {
-            _id: decoded._id,
+            id: decoded.id,
             twoFactor: decoded.twoFactor
         }
     });
@@ -54,43 +56,37 @@ function validate(context: ExecutionContext): ValidationContent | null {
     return decode;
 }
 
+function returnNotAuthorized(session: Session) {
+    session.close();
+    throw new HttpException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        error: 'You are not authorized to access this resource'
+    }, HttpStatus.UNAUTHORIZED);
+}
+
 @Injectable()
 export class AuthGuard implements CanActivate {
-    constructor(
-        @Inject('USER_MODEL')
-        private userSchema: Model<User>,
-    ) {}
-    
     async canActivate(
         ctx: ExecutionContext
     ): Promise<boolean> {
         const validation = validate(ctx);
+        const session = driver.session();
 
-        // TODO: Fix this spaghetti code later when I'll have time
         if(!validation) {
-            throw new HttpException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                error: 'You are not authorized to access this resource'
-            }, HttpStatus.UNAUTHORIZED);
+            session.close();
+            returnNotAuthorized(session);
         };
 
-        const found: User = await this.userSchema.findOne({ _id: validation._id });
+        const found = await session.run(getUserByIdQuery, {
+            id: validation.id
+        });
+        if(found.records.length == 0) returnNotAuthorized(session);
 
-        if(!found) {
-            throw new HttpException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                error: 'You are not authorized to access this resource'
-            }, HttpStatus.UNAUTHORIZED);
-        };
+        const foundUser: User = found.records[0].get(0).properties;
+        if(foundUser.twoFactorEnabled && !validation.twoFactor) 
+            returnNotAuthorized(session);
 
-        if(found.twoFactorAuth && !validation.twoFactor) {
-            throw new HttpException({
-                statusCode: HttpStatus.UNAUTHORIZED,
-                error: 'You are not authorized to access this resource'
-            }, HttpStatus.UNAUTHORIZED);
-        };
-
-        ctx.switchToHttp().getRequest().user = found;
+        ctx.switchToHttp().getRequest().user = foundUser;
 
         return true;
     }

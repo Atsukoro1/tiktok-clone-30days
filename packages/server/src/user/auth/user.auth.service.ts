@@ -1,8 +1,9 @@
+import { createUserQuery, getUserByEmailQuery, updateUserSecurityQuery } from "src/queries/user.queries";
 import { User } from "../user.interface";
 import * as speakeasy from 'speakeasy';
 import * as jwt from 'jsonwebtoken';
+import { driver } from "../../main";
 import { Response } from "express";
-import { Model } from "mongoose";
 import * as argon2 from 'argon2';
 import { 
     User2FAInput, 
@@ -12,32 +13,29 @@ import {
 import { 
     HttpException, 
     HttpStatus, 
-    Inject, 
     Injectable 
 } from "@nestjs/common";
+import { randomString } from "../user.helpers";
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserAuthService {
-    constructor(
-        @Inject('USER_MODEL')
-        private userSchema: Model<User>
-    ) {}
-
     async register(
         input: UserRegisterInput, 
         ip: String, 
         userAgent: String,
         res: Response
     ): Promise<Response | HttpException> {
-        // Check if a user with the same email already exists
-        if(await this.userSchema.findOne({ 
-            email: { 
-                primary: input.email 
-            }
-        })) {
+        const session = driver.session();
+
+        const found = await session.run(getUserByEmailQuery, {
+            email: input.email
+        });
+
+        if(found.records.length > 0) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
-                error: 'Email already exists'
+                error: 'User with this email already exists'
             }, HttpStatus.BAD_REQUEST);
         }
 
@@ -45,25 +43,27 @@ export class UserAuthService {
             saltLength: 32,
         });
 
-        const newUser = new this.userSchema({
+        const result = await session.run(createUserQuery, {
+            id: uuidv4(),
             username: input.username,
             password: hashedPass,
-            email: {
-                primary: input.email
-            },
+            lastIpAddr: ip,
             lastUserAgent: userAgent,
-            lastIpAddr: ip
+            email: input.email,
+            emailVerified: false,
+            emailVerificationCode: randomString(),
+            twoFactorEnabled: false,
+            twoFactorSecret: null
         });
-
-        const saved = await newUser.save();
-        if(saved.errors) throw new Error('Failed to register user');
 
         const token = jwt.sign(
             JSON.stringify({
-                _id: saved._id,
+                id: result.records[0].get(0).properties.id,
             }),
             process.env.JWT_SECRET
         );
+
+        session.close();
 
         return res.status(HttpStatus.CREATED)
             .setHeader(
@@ -74,6 +74,7 @@ export class UserAuthService {
                 statusCode: HttpStatus.CREATED,
                 message: 'User registered successfully'
             })
+            .end();
     }
 
     async login(
@@ -82,16 +83,18 @@ export class UserAuthService {
         userAgent: String,
         res: Response
     ): Promise<Response | HttpException> {
-        const foundUser = await this.userSchema.findOne({ 
-            email: {
-                primary: input.email
-            }
+        const session = driver.session();
+
+        const found = await session.run(getUserByEmailQuery, {
+            email: input.email
         });
 
-        if(!foundUser) throw new HttpException({
+        if(found.records.length == 0) throw new HttpException({
             statusCode: HttpStatus.NOT_FOUND,
             error: 'User not found'
         }, HttpStatus.NOT_FOUND);
+
+        const foundUser: User = found.records[0].get(0).properties;
 
         /* TODO:
             Check if user that is trying to log in has the same 
@@ -109,12 +112,12 @@ export class UserAuthService {
 
         const token = jwt.sign(
             JSON.stringify({
-                _id: foundUser._id,
+                id: foundUser.id,
             }),
             process.env.JWT_SECRET
         );
 
-        if(foundUser.twoFactorAuth.enabled) {
+        if(foundUser.twoFactorEnabled) {
             return res.status(HttpStatus.OK)
                 .setHeader(
                     'set-cookie',
@@ -126,11 +129,13 @@ export class UserAuthService {
                 });
         }
 
-        // Update the user agent and ip address to current values
-        foundUser.lastIpAddr = ip;
-        foundUser.lastUserAgent = userAgent;
+        await session.run(updateUserSecurityQuery, {
+            id: foundUser.id,
+            lastIpAddr: ip,
+            lastUserAgent: userAgent
+        });
 
-        await foundUser.save();
+        await session.close();
 
         return res.status(HttpStatus.OK)
             .setHeader(
@@ -148,13 +153,13 @@ export class UserAuthService {
         res: Response, 
         user: User
     ): Promise<Response | HttpException> {
-        if(!user.twoFactorAuth.enabled) throw new HttpException({
+        if(!user.twoFactorEnabled) throw new HttpException({
             statusCode: HttpStatus.BAD_REQUEST,
             error: '2FA is not enabled'
         }, HttpStatus.BAD_REQUEST);
 
         let validToken = speakeasy.totp.verify({
-            secret: user.twoFactorAuth.secret,
+            secret: user.twoFactorSecret.toString(),
             encoding: 'base32',
             token: input.code,
             window: 1
@@ -167,7 +172,7 @@ export class UserAuthService {
 
         const token = jwt.sign(
             JSON.stringify({
-                _id: user._id,
+                id: user.id,
                 twoFactor: true
             }),
             process.env.JWT_SECRET
