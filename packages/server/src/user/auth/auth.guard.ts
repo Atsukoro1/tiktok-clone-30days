@@ -5,7 +5,6 @@ import {
     ExecutionContext, 
     HttpException, 
     HttpStatus, 
-    Inject, 
     Injectable 
 } from "@nestjs/common";
 import { User } from '../user.interface';

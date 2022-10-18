@@ -1,5 +1,4 @@
 // Cypher queries to manipulate user nodes
-
 export const createUserQuery = `
     CREATE (u:USER {
         id: $id,
@@ -61,3 +60,17 @@ export const changePasswordQuery = `
     SET u.emailVerificationCode = $emailVerificationCode
     RETURN u
 `;
+
+export const followQuery = `
+    MATCH (u1:USER { id: $user1 }) 
+    MATCH (u2:USER { id: $user2 })
+    MERGE (u1)-[r:FOLLOW]->(u2)
+    RETURN r;
+`;
+
+export const unfollowQuery = `
+    MATCH (u:USER)-[r:FOLLOW]->(u2:USER)
+    WHERE u.id = $user1 AND u2.id = $user2
+    DELETE r    
+    RETURN r;
+`
