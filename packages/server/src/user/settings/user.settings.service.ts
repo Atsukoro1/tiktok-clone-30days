@@ -16,6 +16,8 @@ import {
     ChangePasswordInput, 
     SendEmailVerifyCodeInput 
 } from "./user.settings.dto";
+import { enable2FAquery } from "src/queries/user.queries";
+import { driver } from "src/main";
 
 @Injectable()
 export class UserSettingsService {
@@ -25,10 +27,12 @@ export class UserSettingsService {
     ) {}
 
     async enable2fa(
-        user: User & Document,
+        user: User,
         res: Response
     ) {
-        if(user.twoFactorAuth.enabled) {
+        const session = driver.session();
+
+        if(user.twoFactorEnabled) {
             throw new HttpException({
                 statusCode: 400,
                 message: "2FA is already enabled!"
@@ -42,11 +46,9 @@ export class UserSettingsService {
 
         const qrcode = await QRCode.toDataURL(secret.otpauth_url);
 
-        await user.updateOne({
-            twoFactorAuth: {
-                enabled: true,
-                secret: secret.base32
-            }
+        await session.run(enable2FAquery, {
+            id: user.id,
+            twoFactorSecret: secret.base32
         });
 
         return res.status(200)
@@ -126,7 +128,7 @@ export class UserSettingsService {
             html: `
                 <h1>Verify your email</h1>
                 <p>Click on the link below to verify your email</p>
-                <a href="${process.env.HOST}:${process.env.PORT}/user/settings/change-password?code=${found.emailVerificationCode}&_id=${found._id}">
+                <a href="${process.env.HOST}:${process.env.PORT}/user/settings/change-password?code=${found.emailVerificationCode}&_id=${found.id}">
                     Verify your email
                 </a>
             `
