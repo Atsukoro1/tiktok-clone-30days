@@ -1,3 +1,4 @@
+import { DatabaseService } from "src/database/database.service";
 import { User } from "../user.interface";
 import * as speakeasy from 'speakeasy';
 import * as jwt from 'jsonwebtoken';
