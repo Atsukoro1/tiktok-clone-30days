@@ -1,12 +1,9 @@
 import { 
-    IsDefined,
     IsString, 
     IsUUID, 
     Length, 
     MaxLength, 
     MinLength, 
-    Validate, 
-    ValidateIf
 } from "class-validator";
 
 export class PostCreateInput {

@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { Response } from "express";
+import { DateTime, LocalTime } from "neo4j-driver";
 import { driver } from "src/main";
-import { createPostQuery } from "src/queries/post.queries";
+import { connectAuthorToPostQuery, createPostQuery } from "src/queries/post.queries";
 import { User } from "src/user/user.interface";
-import * as uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { PostCreateInput } from "./post.dto";
 
 @Injectable() 
@@ -17,16 +18,26 @@ export class PostService {
     ) {
         const session = driver.session();
 
-        session.run(createPostQuery, {
-            id: uuid.v4(),
-            url: 'https://www.google.com',
-            cover: 'https://www.google.com',
-            caption: 'This is a caption',
-            tags: ['tag1', 'tag2']
+        const post = {
+            id: uuidv4(),
+            caption: input.caption,
+            tags: input.tags
+        };
+
+        await session.run(createPostQuery, post);
+        await session.run(connectAuthorToPostQuery, {
+            createdAt: DateTime.fromStandardDate(new Date()),
+            u: user.id,
+            p: post.id
         });
 
-        session.close();
+        await session.close();
 
-        return 'Post created';
+        return res.status(200)
+            .json({
+                message: 'Post created',
+                statusCode: 200
+            })
+            .end()
     }
 }
