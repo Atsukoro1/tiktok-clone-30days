@@ -74,3 +74,25 @@ export const unfollowQuery = `
     DELETE r    
     RETURN r;
 `
+
+export const blockQuery = `
+    MATCH (u1:USER { id: $user1 }) 
+    MATCH (u2:USER { id: $user2 })
+    MERGE (u1)-[r:BLOCK]->(u2)
+    RETURN r;
+`;
+
+export const unblockQuery = `
+    MATCH (u:USER)-[r:BLOCK]->(u2:USER)
+    WHERE u.id = $user1 AND u2.id = $user2
+    DELETE r    
+    RETURN r;
+`;
+
+export const getRelationshipsQuery = `
+    MATCH 
+    (u1:USER { id: $u1 })
+    -[r]->
+    (u2:USER { id: $u2 })
+    RETURN r
+`;
