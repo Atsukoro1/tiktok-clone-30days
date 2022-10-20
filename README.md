@@ -7,9 +7,9 @@ The concept of TikTok is relatively simple, but there are some things you can do
 Here are some milestones I decided to put here, so you can watch my progress if you want (there is nobody like that).
 
 - [x] (Backend) Basic app file structure
-- [ ] (Frontend) Basic app file structure
+- [x] (Frontend) Basic app file structure
 - [x] (Backend) Login and register system
-- [ ] (Backend) Remake & make everything with Neo4J instead of MongoDB
+- [x] (Backend) Remake & make everything with Neo4J instead of MongoDB
 - [ ] (Frontend) Login and register system
 - [ ] (Backend) Creating and uploading videos.
 - [ ] (Frontend) Creating and uploading videos.
