@@ -40,6 +40,16 @@ export class PostController {
     }
 
     @UseGuards(AuthGuard)
+    @Delete('comment')
+    async deleteComment(
+        @Query() input: PostInteractionInput,
+        @Res() res: Response,
+        @Request() req
+    ) {
+        return await this.service.deleteComment(input, req.user, res);
+    }
+
+    @UseGuards(AuthGuard)
     @Post('like')
     async like(
         @Body() input: PostInteractionInput,

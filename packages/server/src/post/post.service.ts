@@ -1,15 +1,72 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Response } from "express";
 import { DateTime } from "neo4j-driver";
 import { driver } from "src/main";
-import { commentPostQuery, connectAuthorToPostQuery, createPostQuery, getPostByIdQuery, likePostQuery, unlikePostQuery } from "src/queries/post.queries";
 import { User } from "src/user/user.interface";
 import { v4 as uuidv4 } from 'uuid';
-import { CommentCreateInput, PostCreateInput, PostInteractionInput } from "./post.dto";
+import { 
+    CommentCreateInput, 
+    PostCreateInput, 
+    PostInteractionInput 
+} from "./post.dto";
+import { 
+    commentPostQuery, 
+    connectAuthorToPostQuery, 
+    createPostQuery,
+    deleteCommentQuery,
+    getPostByIdQuery, 
+    getPostOrCommenAuthorQuery, 
+    getPostOrCommentQuery, 
+    likePostQuery,
+    unlikePostQuery 
+} from "src/queries/post.queries";
 
 @Injectable() 
 export class PostService {
     constructor() {}
+
+    async deleteComment(
+        input: PostInteractionInput, 
+        user: User,
+        res: Response
+    ) {
+        const session = driver.session();
+
+        const comment = await session.run(getPostOrCommentQuery, {
+            pid: input.id
+        });
+
+        if(comment.records.length === 0 || !comment.records[0].keys.includes('u')) {
+            throw new HttpException({
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'Comment not found'
+            }, HttpStatus.NOT_FOUND)
+        };
+
+        const post = await session.run(getPostOrCommenAuthorQuery, {
+            pid: input.id
+        });
+
+        if(post.records[0].get('u').properties.id !== user.id) {
+            throw new HttpException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                message: 'You are not authorized to delete this comment'
+            }, HttpStatus.UNAUTHORIZED)
+        };
+
+        await session.run(deleteCommentQuery, {
+            cid: input.id
+        });
+
+        session.close();
+
+        return res.status(HttpStatus.OK)
+            .json({
+                statusCode: HttpStatus.OK,
+                message: "Succefully deleted this comment!",
+            })
+            .end();
+    }
 
     async comment(
         input: CommentCreateInput,
@@ -18,10 +75,22 @@ export class PostService {
     ) {
         const session = driver.session();
 
+        const found = await session.run(getPostByIdQuery, {
+            pid: input.id
+        });
+
+        if(found.records.length === 0) {
+            throw new HttpException({
+                message: 'Post not found',
+                statusCode: HttpStatus.NOT_FOUND
+            }, HttpStatus.NOT_FOUND);
+        };
+
         await session.run(commentPostQuery, {
             uid: user.id,
             pid: input.id,
-            comment: input.content,
+            id: uuidv4(),
+            content: input.content,
             createdAt: DateTime.fromStandardDate(new Date())
         });
 
@@ -77,10 +146,11 @@ export class PostService {
     ) {
         const session = driver.session();
 
-        const post = await session.run(getPostByIdQuery, {
+        const post = await session.run(getPostOrCommentQuery, {
             pid: input.id
         });
 
+        console.log(post.records[0]);
         if(post.records.length === 0) {
             return res.status(HttpStatus.NOT_FOUND).json({
                 message: 'Post not found',
