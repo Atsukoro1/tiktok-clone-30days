@@ -20,13 +20,27 @@ export class UserSettingsController {
         private service: UserSettingsService
     ) {}
 
-    @Post('enable-2fa')
+    @Post('verify-2fa')
     @UseGuards(AuthGuard)
-    async enable2fa(
+    async verify2FA(
+        @Request() req,
+        @Response() res,
+        @Query('code') code: string,
+    ) {
+        return this.service.verify2FA(
+            req.user,
+            code,
+            res
+        );
+    }
+
+    @Post('get-2fa-code')
+    @UseGuards(AuthGuard)
+    async getTwo2FACode(
         @Request() req,
         @Response() res
     ) {
-        return this.service.enable2fa(
+        return this.service.get2FACode(
             req.user,
             res
         );

@@ -14,12 +14,54 @@ import {
     ChangePasswordInput, 
     SendEmailVerifyCodeInput 
 } from "./user.settings.dto";
-import { changePasswordQuery, enable2FAquery, getUserByEmailQuery, getUserByIdQuery } from "src/queries/user.queries";
+import { changePasswordQuery, enable2FAquery, getUserByEmailQuery, getUserByIdQuery, set2FASecret } from "src/queries/user.queries";
 import { driver } from "src/main";
 
 @Injectable()
 export class UserSettingsService {
-    async enable2fa(
+    async verify2FA(
+        user: User,
+        code: string,
+        res: Response
+    ) {
+        const session = driver.session();
+
+        if(user.twoFactorEnabled) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "2FA is already enabled!"
+            }, HttpStatus.BAD_REQUEST);
+        };
+
+        const verified = speakEasy.totp.verify({
+            secret: user.twoFactorSecret.toString(),
+            encoding: 'base32',
+            token: code
+        });
+
+        if(!verified) {
+            throw new HttpException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                message: "Invalid code!"
+            }, HttpStatus.UNAUTHORIZED);
+        };
+
+        await session.run(enable2FAquery, {
+            id: user.id
+        });
+
+        await session.close();
+
+        return res.status(HttpStatus.OK)
+            .json({
+                statusCode: HttpStatus.OK,
+                message: "2FA verified!"
+            })
+            .end();
+    }
+
+
+    async get2FACode(
         user: User,
         res: Response
     ) {
@@ -39,7 +81,7 @@ export class UserSettingsService {
 
         const qrcode = await QRCode.toDataURL(secret.otpauth_url);
 
-        await session.run(enable2FAquery, {
+        await session.run(set2FASecret, {
             id: user.id,
             twoFactorSecret: secret.base32
         });

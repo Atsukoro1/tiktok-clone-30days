@@ -43,12 +43,19 @@ export const updateUserSecurityQuery = `
     RETURN (us)
 `;
 
+export const set2FASecret = `
+    MATCH (u:USER {
+        id: $id
+    })
+    SET u.twoFactorSecret = $twoFactorSecret
+    RETURN u
+`;
+
 export const enable2FAquery = `
     MATCH (u:USER {
         id: $id
     })
     SET u.twoFactorEnabled = true
-    SET u.twoFactorSecret = $twoFactorSecret
     RETURN u
 `;
 
@@ -64,7 +71,9 @@ export const changePasswordQuery = `
 export const followQuery = `
     MATCH (u1:USER { id: $user1 }) 
     MATCH (u2:USER { id: $user2 })
-    MERGE (u1)-[r:FOLLOW]->(u2)
+    MERGE (u1)-[r:FOLLOW {
+        date: date($createdAt)
+    }]->(u2)
     RETURN r;
 `;
 
@@ -78,7 +87,9 @@ export const unfollowQuery = `
 export const blockQuery = `
     MATCH (u1:USER { id: $user1 }) 
     MATCH (u2:USER { id: $user2 })
-    MERGE (u1)-[r:BLOCK]->(u2)
+    MERGE (u1)-[r:BLOCK {
+        date($createdAt)
+    }]->(u2)
     RETURN r;
 `;
 
@@ -96,3 +107,31 @@ export const getRelationshipsQuery = `
     (u2:USER { id: $u2 })
     RETURN r
 `;
+
+export const getFollowingQuery = `
+    MATCH 
+        (u:USER { id: $id }),
+        (u)-[:FOLLOW]->(targ)
+    RETURN u
+    SKIP $skip
+    LIMIT $limit
+`;
+
+export const getFollowersQuery = `
+    MATCH
+        (u:USER { id: $id }),
+        (targ)-[:FOLLOW]->(u)
+    RETURN u
+    SKIP $skip
+    LIMIT $limit
+`;
+
+export const getBlockedQuery = `
+    MATCH
+        (u:USER { id: $id }),
+        (u)-[:BLOCK]->(targ)
+    RETURN u
+    SKIP $skip
+    LIMIT $limit
+`;
+

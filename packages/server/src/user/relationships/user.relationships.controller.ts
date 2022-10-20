@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { UserRelationshipsService } from "./user.relationships.service";
-import { UserRelationshipInput } from "./user.relationships.dto";
+import { UserFetchRelationsInput, UserRelationshipInput } from "./user.relationships.dto";
 import { AuthGuard } from "../auth/auth.guard";
 
 @Controller('user/relationships')
@@ -8,6 +8,16 @@ export class UserRelationshipsController {
     constructor(
         private readonly service: UserRelationshipsService
     ) {}
+
+    @UseGuards(AuthGuard)
+    @Get()
+    async getRelationships(
+        @Res() res,
+        @Query() input: UserFetchRelationsInput,
+        @Req() req
+    ) {
+        return this.service.getRelationships(res, input, req.user);
+    }
 
     @UseGuards(AuthGuard)
     @Post('follow')

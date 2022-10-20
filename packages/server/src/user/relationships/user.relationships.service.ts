@@ -1,13 +1,89 @@
-import { UserRelationshipInput } from "./user.relationships.dto";
-import { blockQuery, followQuery, getRelationshipsQuery, getUserByIdQuery, unblockQuery, unfollowQuery } from "src/queries/user.queries";
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "../user.interface";
 import { Response } from "express";
 import { driver } from "src/main";
+import { DateTime, int } from "neo4j-driver";
+import { 
+    blockQuery, 
+    followQuery, 
+    getBlockedQuery, 
+    getFollowersQuery, 
+    getFollowingQuery, 
+    getRelationshipsQuery, 
+    getUserByIdQuery, 
+    unblockQuery, 
+    unfollowQuery 
+} from "src/queries/user.queries";
+import { 
+    RelationType, 
+    UserFetchRelationsInput, 
+    UserRelationshipInput 
+} from "./user.relationships.dto";
 
 @Injectable()
 export class UserRelationshipsService {
     constructor() {}
+
+    async getRelationships(
+        res: Response,
+        input: UserFetchRelationsInput,
+        user: User,
+    ): Promise<HttpException | Response> {
+        const session = driver.session();
+
+        const found = await session.run(getUserByIdQuery, {
+            id: input.userId
+        });
+
+        if(found.records.length == 0) {
+            throw new HttpException({
+                statusCode: HttpStatus.NOT_FOUND,
+                message: 'User not found'
+            }, HttpStatus.NOT_FOUND)
+        };        
+
+        if(input.type === RelationType.BLOCK && input.userId !== user.id) {
+            throw new HttpException({
+                statusCode: HttpStatus.UNAUTHORIZED,
+                message: 'You are not authorized to view this user\'s blocked users'
+            }, HttpStatus.UNAUTHORIZED)
+        };
+
+        const relationships = await session.run(
+            (() => {
+                switch(input.type) {
+                    case RelationType.FOLLOW:
+                        return getFollowersQuery;
+
+                    case RelationType.FOLLOWING:
+                        return getFollowingQuery;
+
+                    case RelationType.BLOCK:
+                        return getBlockedQuery;
+
+                    default: 
+                        return getFollowersQuery;
+                }
+            })(),
+            {
+                id: input.userId,
+                skip: int(!input.page ? 0 : input.page * (input.page - 1)),
+                limit: int(25)
+            }
+        );
+        
+        await session.close();
+
+        return res.status(HttpStatus.OK)
+            .json(relationships.records.map(record => {
+                let properties = record.get(0).properties;
+                return {
+                    id: properties.id,
+                    username: properties.username,
+                }
+            }))
+            .end();
+    }
 
     async follow(
         res: Response, 
@@ -61,7 +137,8 @@ export class UserRelationshipsService {
 
         await session.run(followQuery, {
             user1: user.id.trim(),
-            user2: foundUser.id.trim()
+            user2: foundUser.id.trim(),
+            createdAt: DateTime.fromStandardDate(new Date()),
         });
 
         return res.status(HttpStatus.OK)
@@ -144,7 +221,8 @@ export class UserRelationshipsService {
 
         await session.run(blockQuery, {
             user1: user.id,
-            user2: foundUser.id
+            user2: foundUser.id,
+            createdAt: DateTime.fromStandardDate(new Date())
         });
 
         await session.close();
