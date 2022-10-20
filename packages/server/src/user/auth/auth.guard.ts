@@ -81,11 +81,13 @@ export class AuthGuard implements CanActivate {
         });
         if(found.records.length == 0) returnNotAuthorized(session);
 
+        let request = ctx.switchToHttp().getRequest();
+
         const foundUser: User = found.records[0].get(0).properties;
-        if(foundUser.twoFactorEnabled && !validation.twoFactor) 
+        if((foundUser.twoFactorEnabled && !validation.twoFactor) && !request.url.endsWith('/2fa')) 
             returnNotAuthorized(session);
 
-        ctx.switchToHttp().getRequest().user = foundUser;
+        request.user = foundUser;
 
         return true;
     }

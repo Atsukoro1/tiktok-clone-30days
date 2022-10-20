@@ -43,6 +43,7 @@ export class UserAuthController {
     }
 
     @Post('2fa')
+    @UseGuards(AuthGuard)
     async twoFactorAuth(
         @Body() input: User2FAInput,
         @Request() req,
