@@ -1,7 +1,7 @@
 <template>
     <div class="bg-white shadow-md h-fit rounded-lg p-4 w-fit mt-[100px]">
         <h1 class="text-3xl font-extrabold">
-            👋 Create a new account
+            👋 Sign in to account
         </h1>
         <p class="text-slate-500 text-md mt-2 mb-4 table w-[400px]">
             Best site for sharing your best moments
@@ -31,13 +31,13 @@
                         class="text-white"
                     />
                     &nbsp;
-                    Register
+                    Login
             </button>
 
             <p class="text-center">
-                Already have an account?
+                Don't have an account?
                 <a href="#" @click="$emit('close')" class="text-blue-600">
-                    Login
+                    Register
                 </a>
             </p>
         </form>
@@ -46,16 +46,10 @@
 
 <script>
     export default {
-        name: 'RegisterModal',
+        name: 'LoginModal',
         data() {
             return {
                 list: [
-                    {
-                        name: 'username',
-                        type: 'text',
-                        placeholder: 'Username',
-                        example: 'Sharky'
-                    },
                     {
                         name: 'email',
                         type: 'email',
@@ -67,13 +61,7 @@
                         type: 'password',
                         placeholder: 'Password',
                         example: '•••••••••'
-                    },
-                    {
-                        name: 'passwordConfirm',
-                        type: 'password',
-                        placeholder: 'Confirm Password',
-                        example: '•••••••••'
-                    },
+                    }
                 ]
             }
         }

@@ -15,7 +15,8 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: [
+  ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [],
@@ -31,6 +32,8 @@ export default {
     '@nuxtjs/tailwindcss',
     // https://github.com/nuxt-community/google-fonts-module#readme
     '@nuxtjs/google-fonts',
+    // https://github.com/nuxt-community/fontawesome-module#readme
+    '@nuxtjs/fontawesome',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -72,6 +75,15 @@ export default {
         extend: {},
       },
       plugins: [],
+    }
+  },
+
+  // Fontawesome icon configuration
+  fontawesome: {
+    component: "fa",
+    icons: {
+      solid: true,
+      brands: true
     }
   },
 
