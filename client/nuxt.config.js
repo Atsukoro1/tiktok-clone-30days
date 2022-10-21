@@ -1,14 +1,14 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'client',
+    title: 'TikTok clone',
     htmlAttrs: {
       lang: 'en',
     },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: 'Simple TikTok clone' },
       { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
@@ -29,6 +29,7 @@ export default {
     '@nuxt/typescript-build',
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/google-fonts'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -43,6 +44,37 @@ export default {
     baseURL: '/',
   },
 
+  // Google fonts module configuration https://google-fonts.nuxtjs.org/options
+  googleFonts: {
+    prefetch: true,
+    families: {
+      Poppins: true,
+    }
+  },
+
+  // Use custom Tailwind config file
+  tailwindcss: {
+    config: {
+      content: [
+        `components/**/*.{vue,js}`, 
+        `layouts/**/*.vue`, 
+        `pages/**/*.vue`, 
+        `composables/**/*.{js,ts}`, 
+        `plugins/**/*.{js,ts}`, 
+        `App.{js,ts,vue}`, 
+        `app.{js,ts,vue}`
+      ],
+      theme: {
+        fontFamily: {
+          negr: ['Poppins', 'sans-serif'],
+        },
+        extend: {},
+      },
+      plugins: [],
+    }
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: {
+  },
 }
