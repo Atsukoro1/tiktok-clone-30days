@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[100px]">
+    <div v-on:keydown="keyPressed" class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[100px]">
         <h1 class="text-3xl font-extrabold">
         📷 Enter the code
         </h1>
@@ -10,10 +10,11 @@
 
         <div class="flex justify-center flex-row">
             <input 
-                class="m-2 h-[50px] w-10 bg-slate-100 border-bottom border-slate-300 text-slate-500 text-sm text-center rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                v-for="i in 6"
+                class="m-2 h-[50px] w-[35px] bg-slate-100 border-bottom border-slate-300 text-slate-500 text-sm text-center rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                v-for="num in [1,2,3,4,5,6]"
+                autofocus
                 maxlength="1"
-                :placeholder=i
+                :placeholder=num
             >
         </div>
 
@@ -26,5 +27,29 @@
 <script>
     export default {
         name: 'CodeModal',
+        methods: {
+            keyPressed(e) {
+                e.preventDefault();
+
+                if(isNaN(e.key)) return;
+
+                const actEl = document.activeElement;
+                const nextEl = actEl.nextElementSibling;
+            
+                // If the next element is null, we are at the end of the input
+                if(nextEl) {
+                    nextEl.focus();
+                }
+            
+                actEl.value = e.key;
+            
+                // Change the color of input to less visible one
+                if(actEl.value != "") {
+                    actEl.classList.add("bg-slate-50");
+                } else {
+                    actEl.classList.remove("bg-slate-50");
+                }
+            }
+        }
     }
 </script>

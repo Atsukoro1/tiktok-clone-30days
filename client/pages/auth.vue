@@ -11,21 +11,17 @@
         />
 
         <QrCodeModal
-            v-if="authState == '2fa-qrcode'"
+            v-if="authState == 'qrcode'"
             @close="authState = 'login'"
             @abort="authState = 'login'"
         />
 
         <CodeModal
-            v-if="authState == '2fa-code'"
-            @close="authState = 'login'"
-            @abort="authState = 'login'"
+            v-if="authState == 'code'"
+            @submit="authState = 'login'"
         />
-
-
-        <div v-if="authState == 'done'">
-            Done!
-        </div>
+        
+        <DoneModal v-if="authState == 'done'"/>
     </div>
 </template>
 
@@ -38,7 +34,7 @@
             return {
                 authState: "login"
             };
-        },
+        }
     });
 </script>
 
