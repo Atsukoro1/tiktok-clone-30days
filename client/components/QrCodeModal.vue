@@ -17,18 +17,20 @@
                     Don't use 2FA
                 </button>
 
-                <button
-                    class="bg-[#2557D6]/90 mt-5 text-white px-5 py-2.5 rounded-lg text-sm hover:cursor-pointer ml-3"
-                    v-on:click="$emit('close')"
-                >
-                    Done!
-                </button>
+                <label v-on:click="$emit('submit')">
+                    <LoadingButton
+                        text="Done"
+                        additionalStyles="ml-2"
+                        state="success"
+                    />
+                </label>
             </div>
         </div>
 
         <img
+            v-if="codeData"
             class="w-[180px] h-[180px]"
-            src="qrcode.png" 
+            :src=codeData
             alt="qkod"
         />
     </div>
@@ -36,6 +38,20 @@
 
 <script>
     export default {
-        name: "QrCodeModal"
+        name: "QrCodeModal",
+        data() {
+            return {
+                loading: true,
+                codeData: null
+            }
+        },
+        async created() {
+            const res = await this.$axios.post('/user/settings/get-2fa-code');
+
+            if(res.status == 200) {
+                this.loading = false;
+                this.codeData = res.data.qrcode;
+            }
+        }
     }
 </script>

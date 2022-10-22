@@ -2,7 +2,7 @@
     <div class="w-full h-full flex justify-center align-center bg-slate-50">
         <RegisterModal
             v-if="authState == 'register'" 
-            @close="authState = 'login'"
+            @close="authState = 'qrcode'"
         />
 
         <LoginModal
@@ -12,7 +12,7 @@
 
         <QrCodeModal
             v-if="authState == 'qrcode'"
-            @close="authState = 'login'"
+            @submit="authState = 'code'"
             @abort="authState = 'login'"
         />
 
@@ -32,7 +32,7 @@
         name: "AuthPage",
         data() {
             return {
-                authState: "login"
+                authState: "qrcode"
             };
         }
     });

@@ -1,5 +1,8 @@
 <template>
-    <div v-on:keydown="keyPressed" class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[100px]">
+    <div 
+        v-on:submit="submitForm"
+        class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[100px]"
+    >
         <h1 class="text-3xl font-extrabold">
         📷 Enter the code
         </h1>
@@ -8,26 +11,86 @@
             that you need to enter here to login to your account.
         </p>
 
-        <div class="flex justify-center flex-row">
-            <input 
-                class="m-2 h-[50px] w-[35px] bg-slate-100 border-bottom border-slate-300 text-slate-500 text-sm text-center rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                v-for="num in [1,2,3,4,5,6]"
-                autofocus
-                maxlength="1"
-                :placeholder=num
-            >
-        </div>
+        <form action="">
+            <div class="flex w-[100px] ml-auto mr-auto justify-center flex-row">
+                <input 
+                    class="m-2 h-[40px] w-[35px] bg-slate-100 border-bottom border-slate-300 text-slate-500 text-sm text-center rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    v-for="num in [1,2,3,4,5,6]"
+                    autofocus
+                    maxlength="1"
+                    :placeholder=num
+                >
+            </div>
 
-        <button class="w-full bg-[#2557D6]/90 mt-5 text-white px-5 py-2.5 rounded-lg text-sm hover:cursor-pointer">
-            Submit
-        </button>
+            <LoadingButton
+                @click="submitForm"
+                :state=buttonData.state
+                :text=buttonData.text
+                :additionalStyles=buttonData.additionalStyles
+                :icon=buttonData.icon
+            />
+        </form>
     </div>
 </template>
 
 <script>
     export default {
         name: 'CodeModal',
+        data() {
+            return {
+                buttonData: {
+                    state: "idle",
+                    text: "Submit",
+                    additionalStyles: "w-full mt-5",
+                    icon: null
+                }
+            }
+        },
         methods: {
+            handleSuccess() {
+                this.buttonData = {
+                    state: "success",
+                    text: "Success",
+                    additionalStyles: "w-full mt-5",
+                    icon: ["fas", "check"]
+                };
+
+                setTimeout(() => {
+                    this.$emit('submit');
+                }, 1000);
+            },
+
+            handleError() {
+                this.buttonData = {
+                    state: "error",
+                    text: "Error",
+                    additionalStyles: "w-full mt-5",
+                    icon: ["fas", "times"]
+                };
+
+                setTimeout(() => {
+                    this.buttonData = {
+                        state: "idle",
+                        text: "Submit",
+                        additionalStyles: "w-full mt-5",
+                        icon: null
+                    };
+                }, 1000);
+            },
+
+            submitForm(e) {
+                e.preventDefault();
+
+                let finalStr = "";
+                for(let i = 0; i < 6; i++) {
+                    finalStr += e.target[i].value;
+                }
+
+                this.$axios.post(`/user/settings/verify-2fa?code=${finalStr}`)
+                    .then(res => this.handleSuccess())
+                    .catch(err => this.handleError());
+            },
+
             keyPressed(e) {
                 e.preventDefault();
 
@@ -39,7 +102,7 @@
                 // If the next element is null, we are at the end of the input
                 if(nextEl) {
                     nextEl.focus();
-                }
+                };
             
                 actEl.value = e.key;
             
@@ -50,6 +113,9 @@
                     actEl.classList.remove("bg-slate-50");
                 }
             }
+        },
+        created() {
+            document.addEventListener('keydown', this.keyPressed);
         }
     }
 </script>
