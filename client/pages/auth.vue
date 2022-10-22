@@ -9,6 +9,7 @@
             v-if="authState == 'login'" 
             @close="authState = 'register'"
             @submit="authState = 'done'"
+            @continue="authState = 'code'"
         />
 
         <QrCodeModal

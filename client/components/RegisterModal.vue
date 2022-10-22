@@ -49,7 +49,7 @@
                 state: "idle",
                 text: "Register",
                 additionalStyles: "w-full mt-5",
-                icon: null
+                icon: ["fas", "lock"]
             },
             list: [
                 {

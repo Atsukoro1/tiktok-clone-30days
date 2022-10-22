@@ -51,9 +51,9 @@
             return {
                 buttonData: {
                     state: "idle",
-                    text: "Register",
+                    text: "Login",
                     additionalStyles: "w-full mt-5",
-                    icon: null
+                    icon: ["fas", "lock"]
                 },
                 list: [
                     {
@@ -73,7 +73,7 @@
         },
 
         methods: {
-            handleSuccess() {
+            handleSuccess(res) {
                 this.buttonData = {
                     state: "success",
                     text: "Success",
@@ -82,7 +82,11 @@
                 };
 
                 setTimeout(() => {
-                    this.$emit("submit");
+                    this.$emit(
+                        res.status === 200 
+                            ? "submit" 
+                            : "continue"
+                        );
                 }, 1000);
             },
 
@@ -111,7 +115,7 @@
                     email: e.target.email.value,
                     password: e.target.password.value
                 })
-                .then(_ => this.handleSuccess())
+                .then(res => this.handleSuccess(res))
                 .catch(_ => this.handleError());
             }
         }
