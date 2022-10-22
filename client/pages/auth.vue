@@ -8,6 +8,7 @@
         <LoginModal
             v-if="authState == 'login'" 
             @close="authState = 'register'"
+            @submit="authState = 'done'"
         />
 
         <QrCodeModal
@@ -18,7 +19,7 @@
 
         <CodeModal
             v-if="authState == 'code'"
-            @submit="authState = 'login'"
+            @submit="authState = 'done'"
         />
         
         <DoneModal v-if="authState == 'done'"/>
@@ -32,7 +33,7 @@
         name: "AuthPage",
         data() {
             return {
-                authState: "qrcode"
+                authState: "login"
             };
         }
     });

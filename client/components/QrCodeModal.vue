@@ -45,13 +45,22 @@
                 codeData: null
             }
         },
-        async created() {
-            const res = await this.$axios.post('/user/settings/get-2fa-code');
 
-            if(res.status == 200) {
+        methods: {
+            handleSuccess(res) {
                 this.loading = false;
                 this.codeData = res.data.qrcode;
+            },
+
+            handleError() {
+                this.$emit('abort');
             }
+        },
+        
+        created() {
+            this.$axios.post('/user/settings/get-2fa-code')
+                .then(res => this.handleSuccess(res))
+                .catch(_ => this.handleError());
         }
     }
 </script>

@@ -12,9 +12,9 @@
         </p>
 
         <form action="">
-            <div class="flex w-[100px] ml-auto mr-auto justify-center flex-row">
+            <div class="flex w-[200px] ml-auto mr-auto justify-center flex-row">
                 <input 
-                    class="m-2 h-[40px] w-[35px] bg-slate-100 border-bottom border-slate-300 text-slate-500 text-sm text-center rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="m-2 h-[40px] w-[40px] bg-slate-100 border-bottom border-slate-300 text-slate-500 text-sm text-center rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     v-for="num in [1,2,3,4,5,6]"
                     autofocus
                     maxlength="1"

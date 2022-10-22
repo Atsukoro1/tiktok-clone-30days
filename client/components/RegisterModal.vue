@@ -127,8 +127,8 @@
                 password: e.target.password.value,
                 passwordConfirm: e.target.passwordConfirm.value
             })
-            .then(_ => this.handleSuccess)
-            .catch(_ => this.handleError);
+            .then(_ => this.handleSuccess())
+            .catch(_ => this.handleError());
         }
     }
 }

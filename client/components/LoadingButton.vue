@@ -32,11 +32,10 @@
             },
             icon: {
                 type: Array,
-                optional: true
+                default: null
             },
             additionalStyles: {
-                type: String,
-                optional: true
+                type: String
             }
         },
         data() {

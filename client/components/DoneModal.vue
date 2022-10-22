@@ -12,4 +12,12 @@
 </template>
 
 <script>
+    export default {
+        name: "DoneModal",
+        created() {
+            setTimeout(() => {
+                this.$emit('close');
+            }, 3000);
+        }
+    }
 </script>
