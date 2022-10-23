@@ -1,7 +1,7 @@
 <template>
     <div 
         v-on:submit="submitForm"
-        class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[100px]"
+        class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[160px]"
     >
         <h1 class="text-3xl font-extrabold">
         📷 Enter the code

@@ -1,5 +1,7 @@
 <template>
     <div class="w-full h-full flex justify-center align-center bg-slate-50">
+        <Navbar></Navbar>
+
         <RegisterModal
             v-if="authState == 'register'" 
             @close="authState = 'qrcode'"
@@ -31,13 +33,13 @@
     import Vue from 'vue';
 
     export default Vue.extend({
-        name: "AuthPage",
-        data() {
-            return {
-                authState: "login"
-            };
-        }
-    });
+    name: "AuthPage",
+    data() {
+        return {
+            authState: "login"
+        };
+    }
+});
 </script>
 
 <style>

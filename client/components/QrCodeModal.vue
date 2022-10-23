@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-md h-fit bg-white rounded-lg p-4 w-fit mt-[100px] flex flex-row">
+    <div class="shadow-md h-fit bg-white rounded-lg p-4 w-fit mt-[160px] flex flex-row">
         <div class="mr-4">
             <h1 class="text-3xl font-extrabold">
             📷 Connect 2FA to your account

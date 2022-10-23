@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[100px]">
+    <div class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[160px]">
         <h1 class="text-3xl font-extrabold">
             ✅ Welcome back!
         </h1>

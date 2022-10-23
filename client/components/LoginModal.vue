@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white shadow-md h-fit rounded-lg p-4 w-fit mt-[100px]">
+    <div class="bg-white shadow-md h-fit rounded-lg p-4 w-fit mt-[160px]">
         <h1 class="text-3xl font-extrabold">
             👋 Sign in to account
         </h1>
