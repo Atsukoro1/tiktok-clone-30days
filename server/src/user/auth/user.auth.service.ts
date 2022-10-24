@@ -118,15 +118,17 @@ export class UserAuthService {
         );
 
         if(foundUser.twoFactorEnabled) {
-            return res.status(HttpStatus.OK)
+            console.log("ASJ")
+            return res.status(HttpStatus.ACCEPTED)
                 .setHeader(
                     'set-cookie',
                     `token=${token}; HttpOnly; Path=/`
                 )
                 .json({
-                    statusCode: HttpStatus.OK,
+                    statusCode: HttpStatus.ACCEPTED,
                     message: '2FA is enabled, please verify your identity'
-                });
+                })
+                .end();
         }
 
         await session.run(updateUserSecurityQuery, {
@@ -145,7 +147,8 @@ export class UserAuthService {
             .json({
                 statusCode: HttpStatus.OK,
                 message: 'Validation successful'
-            });
+            })
+            .end();
     }
 
     async twoFactorAuth(

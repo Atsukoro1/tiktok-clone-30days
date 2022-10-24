@@ -2,6 +2,7 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { PostModule } from './post/post.module';
+import { MeModule } from './user/@me/@me.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { PostModule } from './post/post.module';
       envFilePath: ".env"
     }),
     UserModule,
+    MeModule,
     PostModule
   ]
 })

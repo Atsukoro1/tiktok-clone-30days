@@ -3,6 +3,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as neo4j from 'neo4j-driver';
+import * as cors from 'cors';
 
 export let driver: neo4j.Driver;
 
@@ -27,7 +28,11 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
-  
+  app.use(cors({
+    origin: process.env.ORIGIN,
+    credentials: true,
+  }));
+
   await app.listen(process.env.PORT || 3000);
 }
 
