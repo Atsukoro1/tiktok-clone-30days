@@ -52,7 +52,8 @@
                 this.codeData = res.data.qrcode;
             },
 
-            handleError() {
+            handleError(err) {
+                console.log(err);
                 this.$emit('abort');
             }
         },
@@ -60,7 +61,7 @@
         created() {
             this.$axios.post('/user/settings/get-2fa-code')
                 .then(res => this.handleSuccess(res))
-                .catch(_ => this.handleError());
+                .catch(err => this.handleError(err));
         }
     }
 </script>

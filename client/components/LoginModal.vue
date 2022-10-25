@@ -1,16 +1,16 @@
 <template>
     <div class="bg-white shadow-md h-fit rounded-lg p-4 w-fit mt-[160px]">
-        <h1 class="text-3xl font-extrabold">
+        <h1 class="text-2xl md:text-3xl font-extrabold">
             👋 Sign in to account
         </h1>
-        <p class="text-slate-500 text-md mt-2 mb-4 table w-[400px]">
+        <p class="text-slate-500 text-md mt-2 mb-4 table w-[300px] md:w-[400px]">
             Best site for sharing your best moments
             with your friends and family
         </p>
 
         <form 
             class="block clear-both"
-            v-on:submit="submitForm"
+            @submit.prevent="submitForm"
         >
             <div class="mb-2" v-for="(value) in list">
                 <label class="text-slate-500 text-sm font-poppins font-bold" for="username">
@@ -74,6 +74,11 @@
 
         methods: {
             handleSuccess(res) {
+                this.$auth.$storage.setUniversal(
+                    "_token.custom",
+                    res.data.token
+                );
+
                 this.buttonData = {
                     state: "success",
                     text: "Success",
@@ -111,12 +116,30 @@
             async submitForm(e) {
                 e.preventDefault();
 
-                this.$axios.post('/user/auth/login', {
-                    email: e.target.email.value,
-                    password: e.target.password.value
+                this.buttonData = {
+                    state: "loading",
+                    text: "Loading",
+                    additionalStyles: "w-full mt-5",
+                    icon: ["fas", "spinner"]
+                };
+
+                this.$auth.loginWith(
+                    'custom', 
+                    {
+                        data: {
+                            email: e.target.email.value,
+                            password: e.target.password.value
+                        }
+                    }
+                )
+                .then(res => {
+                    console.log(res);
+                    this.handleSuccess(res);
                 })
-                .then(res => this.handleSuccess(res))
-                .catch(_ => this.handleError());
+                .catch(err => {
+                    console.log(err);
+                    this.handleError();
+                });
             }
         }
     }   

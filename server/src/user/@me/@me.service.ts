@@ -16,6 +16,6 @@ export class MeService {
             delete user[element];
         });
 
-        return user;
+        return { user: user };
     }
 }

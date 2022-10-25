@@ -10,7 +10,7 @@ Here are some milestones I decided to put here, so you can watch my progress if 
 - [x] (Frontend) Basic app file structure
 - [x] (Backend) Login and register system
 - [x] (Backend) Remake & make everything with Neo4J instead of MongoDB
-- [ ] (Frontend) Login and register system
+- [x] (Frontend) Login and register system
 - [ ] (Backend) Creating and uploading videos.
 - [ ] (Frontend) Creating and uploading videos.
 - [ ] (Frontend) Customizing of the UI (dark/light theme, custom color)

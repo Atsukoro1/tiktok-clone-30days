@@ -38,8 +38,8 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next'
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -54,6 +54,32 @@ export default {
     prefetch: true,
     families: {
       Poppins: true,
+    }
+  },
+
+  // Auth module configuration: https://auth.nuxtjs.org/guide/setup
+  auth: {
+    redirect: {
+      login: '/auth',
+      home: '/'
+    },
+    strategies: {
+      custom: {
+        scheme: '~/schemes/customScheme',
+        token: {
+          property: 'token',
+          required: true,
+          global: true
+        },
+        user: {
+          property: 'user',
+          autoFetch: true
+        },
+        endpoints: {
+          login: { url: '/user/auth/login', method: 'post' },
+          user: { url: '/@me/user', method: 'get' }
+        }
+      }
     }
   },
 

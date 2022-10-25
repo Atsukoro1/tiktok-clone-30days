@@ -8,7 +8,7 @@
             with your friends and family
         </p>
 
-        <form v-on:submit="submitForm" class="block clear-both">
+        <form @submit.prevent="submitForm" class="block clear-both">
             <div class="mb-2" v-for="(value) in list">
                 <label class="text-slate-500 text-sm font-poppins font-bold" for="username">
                     {{ value.placeholder }}
@@ -80,7 +80,12 @@
         };
     },
     methods: {
-        handleSuccess() {
+        handleSuccess(res) {
+            this.$auth.$storage.setUniversal(
+                "_token.custom",
+                res.data.token
+            );
+
             this.buttonData = {
                 state: "success",
                 text: "Registered!",
@@ -114,21 +119,22 @@
         async submitForm(e) {
             e.preventDefault();
 
-            this.buttonData = {
-                state: "loading",
-                text: "Registering...",
-                additionalStyles: "w-full mt-5",
-                icon: ["fas", "spinner"]
-            };
-
-            this.$axios.$post("/user/auth/register", {
-                username: e.target.username.value,
-                email: e.target.email.value,
-                password: e.target.password.value,
-                passwordConfirm: e.target.passwordConfirm.value
+            this.$auth.loginWith(
+                'custom', 
+                {
+                    data: {
+                        email: e.target.email.value,
+                        password: e.target.password.value,
+                        username: e.target.username.value,
+                    }
+                }
+            )
+            .then(res => {
+                this.handleSuccess(res);
             })
-            .then(_ => this.handleSuccess())
-            .catch(_ => this.handleError());
+            .catch(err => {
+                this.handleError();
+            });
         }
     }
 }

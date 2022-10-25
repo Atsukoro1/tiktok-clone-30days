@@ -11,18 +11,25 @@
             v-if="authState == 'login'" 
             @close="authState = 'register'"
             @submit="authState = 'done'"
-            @continue="authState = 'code'"
+            @continue="authState = 'login-code'"
         />
 
         <QrCodeModal
             v-if="authState == 'qrcode'"
-            @submit="authState = 'code'"
+            @submit="authState = 'verify-code'"
             @abort="authState = 'login'"
         />
 
         <CodeModal
-            v-if="authState == 'code'"
+            v-if="authState == 'login-code'"
             @submit="authState = 'done'"
+            funcType="login"
+        />
+
+        <CodeModal
+            v-if="authState == 'verify-code'"
+            @submit="authState = 'done'"
+            funcType="verify-code"
         />
         
         <DoneModal v-if="authState == 'done'"/>

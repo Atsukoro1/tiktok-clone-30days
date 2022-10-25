@@ -17,28 +17,17 @@ interface ValidationContent {
     twoFactor: boolean;
 };
 
-const getCookie = (name: string, req: Request): String | null => {
-    const cookieHeader = req.headers.cookie;
-    if(!cookieHeader) return null;
-
-    const cookies = cookieHeader.split(';');
-    for(let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].split('=');
-        if(cookie[0].trim() === name) return cookie[1];
-    }
-
-    return null;
-}
-
 function validate(context: ExecutionContext): ValidationContent | null {
     let req: Request = context.switchToHttp().getRequest();
 
-    const token: String | null = getCookie('token', req);
+    let token: String | null = req.headers['authorization'];
 
     // Request header do not contain token cookie
     if(!token) {
         return null;
     };
+
+    token = token.replace('Bearer ', '');
 
     let decode = null;
     jwt.verify(token.toString(), process.env.JWT_SECRET, (err, decoded: any) => {
@@ -84,8 +73,11 @@ export class AuthGuard implements CanActivate {
         let request = ctx.switchToHttp().getRequest();
 
         const foundUser: User = found.records[0].get(0).properties;
-        if((foundUser.twoFactorEnabled && !validation.twoFactor) && !request.url.endsWith('/2fa')) 
-            returnNotAuthorized(session);
+
+        if(
+            (foundUser.twoFactorEnabled && !validation.twoFactor) 
+            && !(/\/user\/auth\/2fa/gmi.test(request.url))
+        ) returnNotAuthorized(session);
 
         request.user = foundUser;
 

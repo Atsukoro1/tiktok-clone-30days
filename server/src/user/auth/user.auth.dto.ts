@@ -2,23 +2,22 @@ import {
     IsAlphanumeric, 
     IsDefined, 
     IsEmail, 
-    IsNumber, 
+    IsOptional, 
     MaxLength, 
     MinLength 
 } from "class-validator";
 
 export class User2FAInput {
     @IsDefined()
-    @IsNumber()
     code!: string;
 }
 
-export class UserRegisterInput {
-    @IsDefined()
+export class UnifiedAuthInput {
+    @IsOptional()
     @MinLength(3)
     @MaxLength(30)
     @IsAlphanumeric()
-    readonly username!: string;
+    readonly username?: string;
 
     @IsDefined()
     @MinLength(8)
@@ -29,16 +28,4 @@ export class UserRegisterInput {
     @MaxLength(1024)
     @IsEmail()
     readonly email!: string;
-}
-
-export class UserLoginInput {
-    @IsDefined()
-    @IsEmail()
-    @MaxLength(1024)
-    readonly email!: string;
-
-    @IsDefined()
-    @MinLength(8)
-    @MaxLength(1024)
-    readonly password!: string;
 }

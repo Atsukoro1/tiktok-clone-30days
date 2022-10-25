@@ -6,9 +6,8 @@ import { driver } from "../../main";
 import { Response } from "express";
 import * as argon2 from 'argon2';
 import { 
-    User2FAInput, 
-    UserLoginInput, 
-    UserRegisterInput 
+    UnifiedAuthInput,
+    User2FAInput
 } from "./user.auth.dto";
 import { 
     HttpException, 
@@ -21,7 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class UserAuthService {
     async register(
-        input: UserRegisterInput, 
+        input: UnifiedAuthInput, 
         ip: String, 
         userAgent: String,
         res: Response
@@ -72,13 +71,14 @@ export class UserAuthService {
             )
             .json({
                 statusCode: HttpStatus.CREATED,
-                message: 'User registered successfully'
+                message: 'User registered successfully',
+                token: token
             })
             .end();
     }
 
     async login(
-        input: UserLoginInput,
+        input: UnifiedAuthInput,
         ip: String,
         userAgent: String,
         res: Response
@@ -89,10 +89,10 @@ export class UserAuthService {
             email: input.email
         });
 
-        if(found.records.length == 0) throw new HttpException({
-            statusCode: HttpStatus.NOT_FOUND,
-            error: 'User not found'
-        }, HttpStatus.NOT_FOUND);
+        if(found.records.length == 0) {
+            session.close();
+            return this.register(input, ip, userAgent, res);
+        }
 
         const foundUser: User = found.records[0].get(0).properties;
 
@@ -118,15 +118,11 @@ export class UserAuthService {
         );
 
         if(foundUser.twoFactorEnabled) {
-            console.log("ASJ")
             return res.status(HttpStatus.ACCEPTED)
-                .setHeader(
-                    'set-cookie',
-                    `token=${token}; HttpOnly; Path=/`
-                )
                 .json({
                     statusCode: HttpStatus.ACCEPTED,
-                    message: '2FA is enabled, please verify your identity'
+                    message: '2FA is enabled, please verify your identity',
+                    token: token
                 })
                 .end();
         }
@@ -140,13 +136,10 @@ export class UserAuthService {
         await session.close();
 
         return res.status(HttpStatus.OK)
-            .setHeader(
-                'set-cookie', 
-                `token=${token}; HttpOnly; Path=/`
-            )
             .json({
                 statusCode: HttpStatus.OK,
-                message: 'Validation successful'
+                message: 'Validation successful',
+                token: token
             })
             .end();
     }
@@ -182,13 +175,10 @@ export class UserAuthService {
         );
 
         return res.status(HttpStatus.OK)
-            .setHeader(
-                'set-cookie',
-                `token=${token}; HttpOnly; Path=/`
-            )
             .json({
                 statusCode: HttpStatus.OK,
-                message: 'Succefully authenticated using third party app!'
+                message: 'Succefully authenticated using third party app!',
+                token: token
             });
     }
 }

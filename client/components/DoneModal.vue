@@ -4,7 +4,7 @@
             ✅ Welcome back!
         </h1>
 
-        <p class="text-slate-500 text-md mt-5 mb-4 table w-[500px] mt-3">
+        <p class="text-slate-500 text-md mt-5 mb-4 table mr-auto ml-auto w-[240px] md:w-[500px] mt-3">
             Thanks for logging in! You will be automatically redirected to 
             the main page in a few seconds...
         </p>

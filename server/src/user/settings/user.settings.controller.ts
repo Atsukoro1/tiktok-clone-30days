@@ -25,7 +25,7 @@ export class UserSettingsController {
     async verify2FA(
         @Request() req,
         @Response() res,
-        @Query('code') code: string,
+        @Body('code') code: string,
     ) {
         return this.service.verify2FA(
             req.user,
