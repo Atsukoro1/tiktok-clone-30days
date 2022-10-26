@@ -34,12 +34,15 @@ export default {
     '@nuxtjs/google-fonts',
     // https://github.com/nuxt-community/fontawesome-module#readme
     '@nuxtjs/fontawesome',
+    // Doc: https://github.com/nuxt-community/tailwindcss-module
+    "@nuxtjs/tailwindcss"
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/auth-next'
+    '@nuxtjs/auth-next',
+    "@nuxtjs/color-mode",
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -55,6 +58,10 @@ export default {
     families: {
       Poppins: true,
     }
+  },
+
+  colorMode: {
+    classSuffix: ""
   },
 
   // Auth module configuration: https://auth.nuxtjs.org/guide/setup
@@ -85,32 +92,46 @@ export default {
 
   // Use custom Tailwind config file
   tailwindcss: {
+    jit: true,
     config: {
-      content: [
-        `components/**/*.{vue,js}`, 
-        `layouts/**/*.vue`, 
-        `pages/**/*.vue`, 
-        `composables/**/*.{js,ts}`, 
-        `plugins/**/*.{js,ts}`, 
-        `App.{js,ts,vue}`, 
-        `app.{js,ts,vue}`
-      ],
-      theme: {
-        fontFamily: {
-          negr: ['Poppins', 'sans-serif'],
+      config: {
+        darkMode: "class",
+        variants: {
+          backgroundColor: ['dark', 'dark-hover', 'dark-group-hover', 'dark-even', 'dark-odd'],
+          borderColor: ['dark', 'dark-disabled', 'dark-focus', 'dark-focus-within'],
+          textColor: ['dark', 'dark-hover', 'dark-active', 'dark-placeholder']
         },
-        extend: {},
+        content: [
+          `components/**/*.{vue,js}`, 
+          `layouts/**/*.vue`, 
+          `pages/**/*.vue`, 
+          `composables/**/*.{js,ts}`, 
+          `plugins/**/*.{js,ts}`, 
+          `App.{js,ts,vue}`, 
+          `app.{js,ts,vue}`
+        ],
+        theme: {
+          darkSelector: '.dark-mode',
+          fontFamily: {
+            negr: ['Poppins', 'sans-serif'],
+          },
+          extend: {},
+        }
       },
-      plugins: [],
+      plugins: [
+        require('tailwindcss-dark-mode')()
+      ]
     }
   },
 
   // Fontawesome icon configuration
   fontawesome: {
-    component: "fa",
+    component: 'fa',
+    suffix: true,
     icons: {
       solid: true,
-      brands: true
+      brands: true,
+      regular: true
     }
   },
 

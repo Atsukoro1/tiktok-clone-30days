@@ -1,9 +1,9 @@
 <template>
     <div class="bg-white shadow-md h-fit rounded-lg p-4 w-fit mt-[160px]">
-        <h1 class="text-3xl font-extrabold">
+        <h1 class="text-2xl md:text-3xl font-extrabold">
             👋 Create a new account
         </h1>
-        <p class="text-slate-500 text-md mt-2 mb-4 table w-[400px]">
+        <p class="text-slate-500 text-md mt-2 mb-4 table w-[300px] md:w-[400px]">
             Best site for sharing your best moments
             with your friends and family
         </p>

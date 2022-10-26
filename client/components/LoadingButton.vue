@@ -1,6 +1,6 @@
 <template>
     <button :class="buttonStates[state] + additionalStyles">
-        <fa 
+        <fa-icon 
             v-if="typeof icon === 'object'"
             :icon="icon"
             :class="iconStates[state]"

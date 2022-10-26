@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full flex justify-center align-center bg-slate-50">
+    <div class="w-full h-full flex justify-center align-center bg-slate-50 dark:bg-gray-700">
         <Navbar></Navbar>
 
         <RegisterModal

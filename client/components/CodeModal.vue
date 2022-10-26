@@ -6,7 +6,7 @@
     >
         <h1 class="text-2xl md:text-3xl font-extrabold">
         📷 Enter the code
-        </h1>
+        </h1> 
         <p class="text-slate-500 text-sm md:text-md mt-5 mb-4 table w-[250px] md:w-[500px] mt-3">
             There is a six digit code in your two factor auth application
             that you need to enter here to login to your account.
