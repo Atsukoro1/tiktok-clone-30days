@@ -22,6 +22,7 @@
                         text="Done"
                         additionalStyles="ml-2"
                         state="success"
+                        :icon="['fas', 'check']"
                     />
                 </label>
             </div>
