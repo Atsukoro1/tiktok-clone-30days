@@ -2,12 +2,12 @@
     <client-only>
     <div 
         v-on:submit="submitForm"
-        class="shadow-md h-fit text-center bg-white rounded-lg p-4 w-fit mt-[160px]"
+        class="shadow-md h-fit text-center dark:bg-gray-800 bg-white rounded-lg p-4 w-fit mt-[160px]"
     >
-        <h1 class="text-2xl md:text-3xl font-extrabold">
+        <h1 class="text-2xl dark:text-white md:text-3xl font-extrabold">
         📷 Enter the code
         </h1> 
-        <p class="text-slate-500 text-sm md:text-md mt-5 mb-4 table w-[250px] md:w-[500px] mt-3">
+        <p class="text-slate-500 dark:text-gray-300 text-sm md:text-md mt-5 mb-4 table w-[250px] md:w-[500px] mt-3">
             There is a six digit code in your two factor auth application
             that you need to enter here to login to your account.
         </p>

@@ -1,10 +1,10 @@
 <template>
-    <div class="shadow-md h-fit bg-white rounded-lg p-4 w-fit mt-[160px] flex flex-row">
+    <div class="shadow-md dark:bg-gray-800 h-fit bg-white rounded-lg p-4 w-fit mt-[160px] flex flex-row">
         <div class="mr-4">
-            <h1 class="text-3xl font-extrabold">
+            <h1 class="dark:text-white text-3xl font-extrabold">
             📷 Connect 2FA to your account
             </h1>
-            <p class="text-slate-500 text-md mt-5 mb-4 table w-[500px] mt-3">
+            <p class="dark:text-gray-400 text-slate-500 text-md mt-5 mb-4 table w-[500px] mt-3">
                 Scan this QR code with your favourite two factor authorization
                 app and use it to login to your account.
             </p>
@@ -29,7 +29,7 @@
 
         <img
             v-if="codeData"
-            class="w-[180px] h-[180px]"
+            class="w-[180px] h-[180px] dark:rounded-lg"
             :src=codeData
             alt="qkod"
         />

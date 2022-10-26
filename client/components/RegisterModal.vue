@@ -1,16 +1,16 @@
 <template>
-    <div class="bg-white shadow-md h-fit rounded-lg p-4 w-fit mt-[160px]">
-        <h1 class="text-2xl md:text-3xl font-extrabold">
+    <div class="bg-white dark:bg-gray-800 shadow-md h-fit rounded-lg p-4 w-fit mt-[160px]">
+        <h1 class="dark:text-white text-2xl md:text-3xl font-extrabold">
             👋 Create a new account
         </h1>
-        <p class="text-slate-500 text-md mt-2 mb-4 table w-[300px] md:w-[400px]">
+        <p class="dark:text-gray-400 text-slate-500 text-md mt-2 mb-4 table w-[300px] md:w-[400px]">
             Best site for sharing your best moments
             with your friends and family
         </p>
 
         <form @submit.prevent="submitForm" class="block clear-both">
             <div class="mb-2" v-for="(value) in list">
-                <label class="text-slate-500 text-sm font-poppins font-bold" for="username">
+                <label class="dark:text-gray-400 text-slate-500 text-sm font-poppins font-bold" for="username">
                     {{ value.placeholder }}
                 </label>
                 <br>
@@ -30,7 +30,7 @@
                 :icon=buttonData.icon
             />
 
-            <p class="text-center">
+            <p class="text-black dark:text-gray-400 text-center">
                 Already have an account?
                 <a href="#" @click="$emit('close')" class="text-blue-600">
                     Login

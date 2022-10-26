@@ -1,5 +1,5 @@
 <template>
-    <a :href="link" class="dark:text-[#58606C] text-black hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium">
+    <a :href="link" class="dark:text-[#58606C] text-black dark:text-gray-200 hover:bg-slate-400 px-3 py-2 rounded-md text-sm font-medium">
         {{ text }}
     </a>
 </template>

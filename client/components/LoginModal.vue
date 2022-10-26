@@ -13,12 +13,12 @@
             @submit.prevent="submitForm"
         >
             <div class="mb-2" v-for="(value) in list">
-                <label class="text-slate-500 text-sm font-poppins font-bold" for="username">
+                <label class="text-slate-500 dark:text-slate-400 text-sm font-poppins font-bold" for="username">
                     {{ value.placeholder }}
                 </label>
                 <br>
                 <input
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="bg-gray-50 dark:text-white border border-gray-300 dark:placeholder-slate-400 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     :type="value.type" 
                     :name="value.type" 
                     :placeholder="value.example"
@@ -34,7 +34,7 @@
                 :icon=buttonData.icon
             />
 
-            <p class="text-center">
+            <p class="text-center text-black dark:text-slate-400">
                 Don't have an account?
                 <a href="#" @click="$emit('close')" class="text-blue-600">
                     Register
