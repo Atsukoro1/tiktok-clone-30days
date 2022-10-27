@@ -1,6 +1,6 @@
 <template>
     <div v-if="this.$auth.loggedIn">
-        <button @focusin="toggleDropdown" @focusout="toggleDropdown" 
+        <button @focusout="toggleDropdown" @click="toggleDropdown" 
             :class="`
                 rounded-full focus:outline-none focus:ring focus:ring-gray-400
                 dark:focus:ring-gray-600 focus:ring-opacity-50
@@ -20,19 +20,17 @@
             ${this.dropdownOpen ? 'block' : 'hidden'}
         `"
         >
+            <button v-for="link in links" @click.prevent="link.onClick">
             <a 
-                v-for="link in links"
-                @click="eval(link.action)"
                 href="#" 
                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-400 text-bold" 
-                role="menuitem" 
-                tabindex="-1" 
-                id="user-menu-item-0">
+                >
                 <fa-icon
                     :icon="link.icon"
                 />
                 {{ link.name }}
             </a>
+            </button>
         </div>
     </div>
     
@@ -55,36 +53,40 @@
                     {
                         name: "Your Profile",
                         icon: ["fas", "user"],
-                        onClick: this.onProfile
+                        onClick: this.onprofile
                     },
                     {
                         name: "Settings",
                         icon: ["fas", "gear"],
-                        onClick: this.onSettings
+                        onClick: this.onsettings
                     },
                     {
                         name: "Sign out",
                         icon: ["fas", "right-from-bracket"],
-                        onClick: this.onSignOut
+                        onClick: this.onsignout
                     }
                 ]
             }
         },
         methods: {
             toggleDropdown() {
-                this.dropdownOpen = !this.dropdownOpen;
+                // This is done to prevent modal from dissapearing when clicking on it
+                setTimeout(() => {
+                    this.dropdownOpen = !this.dropdownOpen;
+                }, 100);
             },
 
-            onProfile() {
+            onprofile() {
                 console.log("Profile opened");
             },
 
-            onSettings() {
+            onsettings() {
                 console.log("Settings opened");
             },
 
-            onSignOut() {
-                console.log("Signed out opened");
+            onsignout() {
+                this.$auth.logout();
+                this.$router.push({ name: "auth" });
             }
         }
     }

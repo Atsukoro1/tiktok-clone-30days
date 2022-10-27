@@ -1,5 +1,14 @@
 <template>
-  <h1>Ahoj</h1>
+  <div class="w-full h-full flex justify-center align-center bg-slate-50 dark:bg-gray-700">
+    <Navbar></Navbar>
+
+    <h1>fc;dkjf</h1>
+    <h1>fc;dkjf</h1>
+    <h1>fc;dkjf</h1>
+    <h1>fc;dkjf</h1>
+    <h1>fc;dkjf</h1>
+    <h1>fc;dkjf</h1>
+  </div>
 </template>
 
 <script lang="ts">
@@ -11,3 +20,9 @@ export default Vue.extend({
 })
 </script>
 
+<style>
+    html, body, #__nuxt, #__layout {
+      height: 100% !important;
+      width: 100% !important;
+    }
+</style>
