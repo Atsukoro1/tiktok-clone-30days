@@ -135,3 +135,14 @@ export const getBlockedQuery = `
     LIMIT $limit
 `;
 
+export const changeEmailQuery = `
+    MATCH(u:USER { id: $id })
+    SET u.email = $newMail
+    RETURN u;
+`;
+
+export const changeUsernameQuery = `
+    MATCH(u:USER { id: $id })
+    SET u.username = $newUsername
+    RETURN u;
+`;

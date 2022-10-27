@@ -3,6 +3,7 @@ import { User } from "../user.interface";
 import * as nodemailer from 'nodemailer';
 import * as speakEasy from 'speakeasy';
 import { Response } from "express";
+import { driver } from "src/main";
 import * as argon2 from 'argon2';
 import * as QRCode from 'qrcode';
 import { 
@@ -11,14 +12,103 @@ import {
     Injectable 
 } from "@nestjs/common";
 import { 
+    ChangeEmailInput,
     ChangePasswordInput, 
+    ChangeUsernameInput, 
     SendEmailVerifyCodeInput 
 } from "./user.settings.dto";
-import { changePasswordQuery, enable2FAquery, getUserByEmailQuery, getUserByIdQuery, set2FASecret } from "src/queries/user.queries";
-import { driver } from "src/main";
+import { 
+    changeEmailQuery,
+    changePasswordQuery, 
+    changeUsernameQuery, 
+    enable2FAquery, 
+    getUserByEmailQuery, 
+    getUserByIdQuery, 
+    set2FASecret 
+} from "src/queries/user.queries";
 
 @Injectable()
 export class UserSettingsService {
+    async changeUsername(
+        user: User,
+        res: Response,
+        input: ChangeUsernameInput
+    ) {
+        const session = driver.session();
+
+        if(input.username == user.username) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "Username is the same!"
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        await session.run(changeUsernameQuery, {
+            id: user.id,
+            newUsername: input.username
+        });
+
+        await session.close();
+
+        return res.status(HttpStatus.OK)
+            .json({
+                statusCode: HttpStatus.OK,
+                message: "Username changed!"
+            })
+            .end();
+    }
+
+    async changeEmail(
+        user: User,
+        res: Response,
+        input: ChangeEmailInput,
+    ) {
+        if(input.email == user.email) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "You already have this email!"
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        const compared = await argon2.verify(
+            user.password.toString(), 
+            input.password
+        );
+        if(!compared) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: "Invalid password!"
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        const session = driver.session();
+
+        const found = await session.run(getUserByEmailQuery, {
+            email: input.email
+        });
+
+        if(found.records.length > 0) {
+            throw new HttpException({
+                statusCode: 400,
+                message: "User with this email already exists!"
+            }, HttpStatus.BAD_REQUEST);
+        };
+
+        await session.run(changeEmailQuery, {
+            id: user.id,
+            newEmail: input.email,
+        });
+
+        await session.close();
+
+        return res.status(HttpStatus.OK)
+            .json({
+                statusCode: HttpStatus.OK,
+                message: "Email changed!"
+            })
+            .end();
+    }
+
     async verify2FA(
         user: User,
         code: string,

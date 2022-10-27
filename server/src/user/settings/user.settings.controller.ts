@@ -10,7 +10,9 @@ import {
     UseGuards 
 } from "@nestjs/common";
 import { 
+    ChangeEmailInput,
     ChangePasswordInput, 
+    ChangeUsernameInput, 
     SendEmailVerifyCodeInput 
 } from "./user.settings.dto";
 
@@ -54,6 +56,32 @@ export class UserSettingsController {
         return this.service.sendEmailVerifyCode(
             input, 
             res
+        );
+    }
+
+    @Post('change-email')
+    async changeEmail(
+        @Request() req,
+        @Response() res,
+        @Body() body: ChangeEmailInput
+    ) {
+        return this.service.changeEmail(
+            req.user,
+            res,
+            body
+        );
+    }
+
+    @Post('change_username')
+    async changeUsername(
+        @Request() req,
+        @Response() res,
+        @Body() body: ChangeUsernameInput
+    ) {
+        return this.service.changeUsername(
+            req.user,
+            res,
+            body
         );
     }
 
