@@ -43,7 +43,7 @@
     name: "AuthPage",
     data() {
         return {
-            authState: "qrcode"
+            authState: "login"
         };
     }
 });

@@ -37,7 +37,11 @@
     </div>
     
     <div v-else="this.$auth.loggedIn">
-        <h1>Not logged in</h1>
+        <a @click.prevent="$router.push({ name: 'auth' })">
+            <button class="bg-blue-600 p-2 rounded-lg text-white pr-4 pl-4">
+                Sign in
+            </button>
+        </a>
     </div>
 </template>
 

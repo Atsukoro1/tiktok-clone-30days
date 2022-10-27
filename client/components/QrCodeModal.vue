@@ -53,9 +53,8 @@
                 this.codeData = res.data.qrcode;
             },
 
-            handleError(err) {
-                console.log(err);
-                this.$emit('abort');
+            handleError(_) {
+                return this.$emit('abort');
             }
         },
         
