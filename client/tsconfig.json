@@ -13,9 +13,17 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "#app": [
+        "./node_modules/nuxt3/dist/app/index"
+      ]
     },
-    "types": ["@nuxt/types", "@nuxtjs/axios", "@types/node"]
+    "types": [
+      "@nuxtjs/axios", 
+      "@types/node",
+      "@nuxtjs/auth",
+      "@nuxt/types"
+    ]
   },
   "exclude": ["node_modules", ".nuxt", "dist"]
 }

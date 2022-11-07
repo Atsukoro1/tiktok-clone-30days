@@ -64,6 +64,10 @@ export default {
     classSuffix: ""
   },
 
+  imports: [
+    'components/'
+  ],
+
   // Auth module configuration: https://auth.nuxtjs.org/guide/setup
   auth: {
     redirect: {
@@ -134,6 +138,12 @@ export default {
       regular: true
     }
   },
+
+  "types": [
+    "@nuxt/types", 
+    "@nuxtjs/auth",
+    "@types/nuxtjs__auth"
+  ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
